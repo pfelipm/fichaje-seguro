@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <title>Confirmar inicialización</title>
+  <!-- Tailwind CSS para diseño moderno -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Iconos Lucide -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col justify-between">
+
+  <!-- Cabecera de Alerta -->
+  <header class="bg-gradient-to-r from-amber-600 to-amber-500 text-white px-6 py-4 shadow-md flex items-center gap-3">
+    <div class="p-2 bg-white/10 rounded-lg">
+      <i data-lucide="alert-triangle" class="w-6 h-6 text-amber-100"></i>
+    </div>
+    <div>
+      <h1 class="text-lg font-bold">Sistema ya inicializado</h1>
+      <p class="text-xs text-amber-100">Se han detectado configuraciones previas en la hoja de cálculo</p>
+    </div>
+  </header>
+
+  <!-- Contenido principal -->
+  <main class="flex-1 p-6 space-y-4">
+    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+      <p class="text-sm text-slate-600 leading-relaxed">
+        El script de <strong>Fichaje Seguro</strong> ya está configurado en esta hoja de cálculo.
+      </p>
+      <p class="text-sm text-slate-600 leading-relaxed mt-2">
+        Si procedes con la reinicialización:
+      </p>
+      <ul class="list-disc list-inside text-xs text-slate-500 mt-2 space-y-1">
+        <li>Se recrearán las pestañas de <strong>Asistencia</strong> y <strong>Ajustes</strong>.</li>
+        <li>Se restaurarán todos los parámetros de seguridad y visuales por defecto.</li>
+        <li>Los registros antiguos podrían ser archivados o sobrescritos.</li>
+      </ul>
+      <p class="text-sm font-semibold text-slate-700 mt-4">
+        ¿Estás seguro de que deseas restablecer el sistema?
+      </p>
+    </div>
+  </main>
+
+  <!-- Botones de Acción -->
+  <footer class="bg-slate-100 px-6 py-4 border-t border-slate-200 flex justify-end gap-3">
+    <button 
+      type="button" 
+      onclick="google.script.host.close()" 
+      class="px-4 py-2 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 font-semibold rounded-lg text-sm transition-all"
+    >
+      No, cancelar
+    </button>
+    <button 
+      type="button" 
+      onclick="ejecutarReinicializacion()" 
+      id="btnConfirmar"
+      class="px-5 py-2 bg-amber-600 hover:bg-amber-500 text-white font-semibold rounded-lg text-sm shadow-md shadow-amber-900/10 flex items-center gap-2 transition-all"
+    >
+      <i data-lucide="refresh-cw" class="w-4 h-4"></i> Sí, reinicializar
+    </button>
+  </footer>
+
+  <script>
+    window.onload = function() {
+      lucide.createIcons();
+    };
+
+    function ejecutarReinicializacion() {
+      const btn = document.getElementById('btnConfirmar');
+      btn.disabled = true;
+      btn.innerHTML = `<span class="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent inline-block mr-1"></span> Reinicializando...`;
+
+      google.script.run
+        .withSuccessHandler(function(respuesta) {
+          alert(respuesta);
+          google.script.host.close();
+        })
+        .withFailureHandler(function(err) {
+          alert("Error al reinicializar: " + err.message);
+          btn.disabled = false;
+          btn.innerHTML = `<i data-lucide="refresh-cw" class="w-4 h-4"></i> Sí, reinicializar`;
+        })
+        .ejecutarInicializacionForzada();
+    }
+  </script>
+</body>
+</html>

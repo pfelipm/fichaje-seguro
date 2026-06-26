@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <title>Guía de despliegue</title>
+  <!-- Tailwind CSS para diseño moderno -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Iconos Lucide -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    /* Estilos personalizados para scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col justify-between">
+
+  <!-- Cabecera -->
+  <header class="bg-gradient-to-r from-slate-700 to-slate-600 text-white px-6 py-4 shadow-md flex items-center gap-3">
+    <div class="p-2 bg-white/10 rounded-lg">
+      <i data-lucide="rocket" class="w-6 h-6 text-slate-200"></i>
+    </div>
+    <div>
+      <h1 class="text-lg font-bold">Guía de despliegue web</h1>
+      <p class="text-xs text-slate-300 font-medium">Pasos para publicar tu aplicación de Fichaje Seguro</p>
+    </div>
+  </header>
+
+  <!-- Contenido principal con pasos -->
+  <main class="flex-1 overflow-y-auto p-6 max-h-[480px] space-y-4">
+    
+    <!-- Paso 1 -->
+    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-start gap-4">
+      <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 font-bold flex items-center justify-center shrink-0">1</div>
+      <div>
+        <h3 class="text-sm font-bold text-slate-700">Abre el editor de secuencia de comandos</h3>
+        <p class="text-xs text-slate-500 mt-1">
+          En tu hoja de cálculo, haz clic en <strong>Extensiones</strong> &gt; <strong>Apps Script</strong> para acceder al panel de desarrollo donde reside este código.
+        </p>
+      </div>
+    </div>
+
+    <!-- Paso 2 -->
+    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-start gap-4">
+      <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 font-bold flex items-center justify-center shrink-0">2</div>
+      <div>
+        <h3 class="text-sm font-bold text-slate-700">Inicia un nuevo despliegue</h3>
+        <p class="text-xs text-slate-500 mt-1">
+          Busca el botón azul <strong>Desplegar</strong> (esquina superior derecha del editor) y selecciona <strong>Nuevo despliegue</strong>.
+        </p>
+      </div>
+    </div>
+
+    <!-- Paso 3 -->
+    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-start gap-4">
+      <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 font-bold flex items-center justify-center shrink-0">3</div>
+      <div>
+        <h3 class="text-sm font-bold text-slate-700">Selecciona el tipo "Aplicación web"</h3>
+        <p class="text-xs text-slate-500 mt-1">
+          Haz clic en el icono del engranaje al lado de "Seleccionar tipo" y elige <strong>Aplicación web</strong>.
+        </p>
+      </div>
+    </div>
+
+    <!-- Paso 4 -->
+    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-start gap-4">
+      <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 font-bold flex items-center justify-center shrink-0">4</div>
+      <div>
+        <h3 class="text-sm font-bold text-slate-700">Configura los permisos de acceso</h3>
+        <p class="text-xs text-slate-500 mt-1">
+          Asegúrate de establecer los siguientes parámetros:
+        </p>
+        <ul class="list-disc list-inside text-xs text-slate-500 mt-1.5 space-y-1">
+          <li><strong>Ejecutar como:</strong> Yo (tu dirección de correo).</li>
+          <li><strong>Quién tiene acceso:</strong> Cualquier persona (incluso anónimos).</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Paso 5 -->
+    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-start gap-4">
+      <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 font-bold flex items-center justify-center shrink-0">5</div>
+      <div>
+        <h3 class="text-sm font-bold text-slate-700">Autoriza el acceso a la cuenta</h3>
+        <p class="text-xs text-slate-500 mt-1">
+          Haz clic en <strong>Desplegar</strong>. Google te solicitará otorgar permisos. Pulsa en <strong>Autorizar acceso</strong>, selecciona tu cuenta, haz clic en <em>Configuración avanzada</em> (en la esquina inferior izquierda del aviso) y luego en <em>Ir a Fichaje Seguro (no seguro)</em>.
+        </p>
+      </div>
+    </div>
+
+    <!-- Paso 6 -->
+    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-start gap-4">
+      <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 font-bold flex items-center justify-center shrink-0">6</div>
+      <div>
+        <h3 class="text-sm font-bold text-slate-700">Comparte la URL del formulario</h3>
+        <p class="text-xs text-slate-500 mt-1">
+          Una vez finalizado, copia la <strong>URL de la aplicación web</strong> que te proporciona Google. Esta es la dirección que debes compartir con los usuarios para que registren su asistencia.
+        </p>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Botones de Acción -->
+  <footer class="bg-slate-100 px-6 py-4 border-t border-slate-200 flex justify-end gap-3">
+    <button 
+      type="button" 
+      onclick="google.script.host.close()" 
+      class="px-5 py-2 bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-lg text-sm shadow-md shadow-slate-900/10 flex items-center gap-2 transition-all"
+    >
+      Entendido
+    </button>
+  </footer>
+
+  <script>
+    window.onload = function() {
+      lucide.createIcons();
+    };
+  </script>
+</body>
+</html>

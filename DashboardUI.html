@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <title>Fichaje Seguro - Panel de Control</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Iconos Lucide -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col justify-between overflow-y-auto">
+
+  <!-- Capa de carga (spinner de entrada) -->
+  <div id="loaderCapa" class="fixed inset-0 bg-slate-900/40 backdrop-blur-[2px] flex items-center justify-center z-50 transition-all duration-300">
+    <div class="bg-white p-6 rounded-2xl shadow-xl border border-slate-200 flex flex-col items-center gap-4 text-center max-w-xs">
+      <div class="relative w-12 h-12">
+        <div class="absolute inset-0 rounded-full border-4 border-slate-100"></div>
+        <div class="absolute inset-0 rounded-full border-4 border-slate-700 border-t-transparent animate-spin"></div>
+      </div>
+      <div>
+        <p class="text-sm font-bold text-slate-700">Cargando panel...</p>
+        <p class="text-xs text-slate-400 mt-1">Recuperando registros e indexando métricas de seguridad</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cabecera -->
+  <header class="bg-gradient-to-r from-slate-800 to-slate-700 text-white px-6 py-4 shadow-md flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="p-2 bg-white/10 rounded-lg">
+        <i data-lucide="bar-chart-3" class="w-6 h-6 text-slate-200"></i>
+      </div>
+      <div>
+        <h1 class="text-lg font-bold">Panel de control de asistencia</h1>
+        <p class="text-xs text-slate-300 font-medium">Analíticas, detección de fraude y geolocalización</p>
+      </div>
+    </div>
+    <button 
+      type="button" 
+      onclick="google.script.host.close()" 
+      class="px-4 py-1.5 bg-slate-600 hover:bg-slate-500 active:bg-slate-700 text-white text-xs font-semibold rounded-lg transition-all"
+    >
+      Cerrar panel
+    </button>
+  </header>
+
+  <!-- Cuerpo Principal -->
+  <main class="flex-1 p-6 flex flex-col gap-6">
+    
+    <!-- Fila 1: Indicadores clave (Scorecards) -->
+    <section class="grid grid-cols-4 gap-4">
+      
+      <!-- Total Check-ins -->
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
+        <div class="p-3 bg-blue-50 text-blue-600 rounded-lg">
+          <i data-lucide="users" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <p class="text-xs text-slate-400 font-semibold uppercase tracking-wider">Fichajes totales</p>
+          <h3 id="statTotal" class="text-2xl font-bold text-slate-800">0</h3>
+        </div>
+      </div>
+
+      <!-- Unique Users -->
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
+        <div class="p-3 bg-indigo-50 text-indigo-600 rounded-lg">
+          <i data-lucide="user-check" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <p class="text-xs text-slate-400 font-semibold uppercase tracking-wider">Usuarios únicos</p>
+          <h3 id="statUnicos" class="text-2xl font-bold text-slate-800">0</h3>
+        </div>
+      </div>
+
+      <!-- Fraud Alerts -->
+      <div id="cardAlertas" class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4 transition-colors">
+        <div id="iconAlertasWrapper" class="p-3 bg-slate-100 text-slate-500 rounded-lg">
+          <i data-lucide="shield-alert" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <p class="text-xs text-slate-400 font-semibold uppercase tracking-wider">Alertas de fraude</p>
+          <h3 id="statAlertas" class="text-2xl font-bold text-slate-800">0</h3>
+        </div>
+      </div>
+
+      <!-- GPS Missing -->
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
+        <div class="p-3 bg-amber-50 text-amber-600 rounded-lg">
+          <i data-lucide="map-pin-off" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <p class="text-xs text-slate-400 font-semibold uppercase tracking-wider">Fichajes sin GPS</p>
+          <h3 id="statSinGps" class="text-2xl font-bold text-slate-800">0</h3>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Fila 1.5: Filtros y Rango Temporal -->
+    <section class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between gap-4 flex-wrap">
+      <div class="flex items-center gap-4 flex-wrap">
+        <div class="flex items-center gap-2">
+          <label for="filtroFechaTipo" class="text-xs font-semibold text-slate-500">Rango temporal:</label>
+          <select 
+            id="filtroFechaTipo" 
+            onchange="cambiarFiltroFecha()"
+            class="px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-slate-500 cursor-pointer"
+          >
+            <option value="todos">Todos los registros</option>
+            <option value="hoy">Hoy</option>
+            <option value="semana">Esta semana</option>
+            <option value="mes">Este mes</option>
+            <option value="trimestre">Este trimestre</option>
+            <option value="rango">Entre fechas...</option>
+          </select>
+        </div>
+        
+        <div id="wrapperFechasCustom" class="hidden flex items-center gap-2">
+          <input 
+            type="date" 
+            id="fechaInicio" 
+            onchange="filtrarDatos()"
+            class="px-2 py-1 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-slate-500"
+          >
+          <span class="text-slate-400 text-xs">a</span>
+          <input 
+            type="date" 
+            id="fechaFin" 
+            onchange="filtrarDatos()"
+            class="px-2 py-1 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-slate-500"
+          >
+        </div>
+      </div>
+
+      <!-- Buscadores y filtro de alertas -->
+      <div class="flex items-center gap-2 flex-wrap">
+        <input 
+          type="text" 
+          id="filtroBusqueda" 
+          placeholder="Buscar por ID..." 
+          oninput="filtrarDatos()"
+          class="px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-slate-500 focus:bg-white transition-all w-36"
+        >
+        <input 
+          type="text" 
+          id="filtroDispositivo" 
+          placeholder="Buscar por dispositivo (Hash)..." 
+          oninput="filtrarDatos()"
+          class="px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-slate-500 focus:bg-white transition-all w-48"
+        >
+        <select 
+          id="filtroAlerta" 
+          onchange="filtrarDatos()"
+          class="px-2 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-slate-500 cursor-pointer"
+        >
+          <option value="todos">Todos los estados</option>
+          <option value="alertas">Solo alertas de fraude</option>
+          <option value="singps">Sin coordenadas GPS</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- Fila 2: Gráficas en disposición horizontal -->
+    <section class="grid grid-cols-12 gap-6">
+      
+      <!-- Gráfico de barras temporales (70% de la anchura aproximada) -->
+      <div class="col-span-8 bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-3">
+        <div class="flex items-center justify-between flex-wrap gap-2">
+          <h2 class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-2">
+            <i data-lucide="bar-chart-2" class="w-4 h-4"></i> Fichajes en el tiempo
+          </h2>
+          
+          <div class="flex items-center gap-3">
+            <!-- Selector de Agrupación Temporal -->
+            <select 
+              id="agrupacionTemporal" 
+              onchange="filtrarDatos()" 
+              class="px-2 py-1 bg-slate-50 border border-slate-300 rounded-lg text-[11px] focus:outline-none focus:ring-2 focus:ring-slate-500 cursor-pointer"
+            >
+              <option value="dia">Agrupar por día</option>
+              <option value="semana">Agrupar por semana</option>
+              <option value="quincena">Agrupar por quincena</option>
+              <option value="mes">Agrupar por mes</option>
+            </select>
+
+            <!-- Checkbox de Columnas Apiladas -->
+            <div class="flex items-center gap-1.5">
+              <input 
+                type="checkbox" 
+                id="chartApilado" 
+                onchange="filtrarDatos()" 
+                checked
+                class="cursor-pointer h-3.5 w-3.5 rounded border-slate-300 text-slate-700 focus:ring-slate-500"
+              >
+              <label for="chartApilado" class="text-[11px] text-slate-600 font-semibold cursor-pointer select-none">Columnas apiladas</label>
+            </div>
+          </div>
+        </div>
+        <div class="h-56">
+          <canvas id="chartHistorico"></canvas>
+        </div>
+      </div>
+
+      <!-- Donut de Alertas de fraude (30% de la anchura aproximada) -->
+      <div class="col-span-4 bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-3">
+        <h2 class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-2">
+          <i data-lucide="pie-chart" class="w-4 h-4"></i> Seguridad de los registros
+        </h2>
+        <div class="h-56">
+          <canvas id="chartFraude"></canvas>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Fila 3: Tabla de Registros -->
+    <section class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-4">
+      <h2 class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-2">
+        <i data-lucide="list" class="w-4 h-4"></i> Registros de asistencia
+      </h2>
+      
+      <!-- Contenedor con scroll vertical para ver todos los registros -->
+      <div class="overflow-y-auto border border-slate-200 rounded-lg max-h-[550px]">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead class="bg-slate-100 text-slate-600 font-bold sticky top-0">
+            <tr>
+              <th class="p-3 border-b border-slate-200 cursor-pointer select-none hover:bg-slate-200 transition-colors" onclick="ordenarPor('fecha')">
+                <div class="flex items-center gap-1 justify-between">
+                  <span>Fecha y hora</span>
+                  <i id="icon-fecha" data-lucide="arrow-up-down" class="w-3 h-3 text-slate-400 shrink-0"></i>
+                </div>
+              </th>
+              <th class="p-3 border-b border-slate-200 cursor-pointer select-none hover:bg-slate-200 transition-colors" onclick="ordenarPor('nombre')">
+                <div class="flex items-center gap-1 justify-between">
+                  <span>ID usuario</span>
+                  <i id="icon-nombre" data-lucide="arrow-up-down" class="w-3 h-3 text-slate-400 shrink-0"></i>
+                </div>
+              </th>
+              <th class="p-3 border-b border-slate-200 cursor-pointer select-none hover:bg-slate-200 transition-colors" onclick="ordenarPor('coordenadas')">
+                <div class="flex items-center gap-1 justify-between">
+                  <span>Coordenadas</span>
+                  <i id="icon-coordenadas" data-lucide="arrow-up-down" class="w-3 h-3 text-slate-400 shrink-0"></i>
+                </div>
+              </th>
+              <th class="p-3 border-b border-slate-200 cursor-pointer select-none hover:bg-slate-200 transition-colors" onclick="ordenarPor('dispositivo')">
+                <div class="flex items-center gap-1 justify-between">
+                  <span>Dispositivo (Hash)</span>
+                  <i id="icon-dispositivo" data-lucide="arrow-up-down" class="w-3 h-3 text-slate-400 shrink-0"></i>
+                </div>
+              </th>
+              <th class="p-3 border-b border-slate-200 cursor-pointer select-none hover:bg-slate-200 transition-colors" onclick="ordenarPor('alerta')">
+                <div class="flex items-center gap-1 justify-between">
+                  <span>Alerta de fraude</span>
+                  <i id="icon-alerta" data-lucide="arrow-up-down" class="w-3 h-3 text-slate-400 shrink-0"></i>
+                </div>
+              </th>
+            </tr>
+          </thead>
+          <tbody id="tablaCuerpo" class="divide-y divide-slate-100">
+            <tr>
+              <td colspan="5" class="p-6 text-center text-slate-400 italic">Cargando registros...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // Variables globales
+    let DATOS_ORIGINALES = [];
+    let chartFraudeInstance = null;
+    let chartHistoricoInstance = null;
+    let COLUMNA_ORDEN = "fecha";
+    let ORDEN_ASC = false;
+
+    window.onload = function() {
+      lucide.createIcons();
+      cargarDatosDashboard();
+    };
+
+    /**
+     * Alterna la visualización de los selectores de fecha personalizados
+     */
+    function cambiarFiltroFecha() {
+      const tipo = document.getElementById('filtroFechaTipo').value;
+      const wrapper = document.getElementById('wrapperFechasCustom');
+      if (tipo === 'rango') {
+        wrapper.classList.remove('hidden');
+      } else {
+        wrapper.classList.add('hidden');
+      }
+      filtrarDatos();
+    }
+
+    /**
+     * Llama al backend de Apps Script para obtener los datos de la hoja de cálculo.
+     */
+    function cargarDatosDashboard() {
+      google.script.run
+        .withSuccessHandler(function(registros) {
+          DATOS_ORIGINALES = registros;
+          procesarYMostrarDatos(registros);
+        })
+        .withFailureHandler(function(err) {
+          const loader = document.getElementById('loaderCapa');
+          if (loader) loader.remove();
+          console.error(err);
+        })
+        .obtenerDatosDashboard();
+    }
+
+    /**
+     * Procesa la información, calcula los scorecards, llena la tabla y genera gráficas.
+     */
+    function procesarYMostrarDatos(registros) {
+      // Ocultar capa de carga de forma fluida
+      const loader = document.getElementById('loaderCapa');
+      if (loader) {
+        loader.classList.add('opacity-0', 'pointer-events-none');
+        setTimeout(() => loader.remove(), 300);
+      }
+      
+      // 1. Calcular métricas
+      const total = registros.length;
+      const unicos = new Set(registros.map(r => r.nombre)).size;
+      const alertas = registros.filter(r => r.alerta !== "NO").length;
+      const sinGps = registros.filter(r => r.latitud === "No disponible" || r.latitud === "").length;
+
+      // 2. Pintar scorecards
+      document.getElementById('statTotal').innerText = total;
+      document.getElementById('statUnicos').innerText = unicos;
+      document.getElementById('statAlertas').innerText = alertas;
+      document.getElementById('statSinGps').innerText = sinGps;
+
+      // Alertas de fraude con estilo rojo si hay alguna
+      const card = document.getElementById('cardAlertas');
+      const wrapper = document.getElementById('iconAlertasWrapper');
+      if (alertas > 0) {
+        card.classList.remove('bg-white', 'border-slate-200');
+        card.classList.add('bg-red-50', 'border-red-200');
+        wrapper.className = "p-3 bg-red-100 text-red-600 rounded-lg animate-pulse";
+      } else {
+        card.classList.remove('bg-red-50', 'border-red-200');
+        card.classList.add('bg-white', 'border-slate-200');
+        wrapper.className = "p-3 bg-slate-100 text-slate-500 rounded-lg";
+      }
+
+      // 3. Pintar tabla
+      construirTabla(registros);
+
+      // 4. Construir gráficos
+      construirGraficos(registros, alertas, total);
+    }
+
+    /**
+     * Llena el cuerpo de la tabla con los registros proporcionados.
+     */
+    function construirTabla(registros) {
+      const cuerpo = document.getElementById('tablaCuerpo');
+      cuerpo.innerHTML = "";
+
+      if (registros.length === 0) {
+        cuerpo.innerHTML = `
+          <tr>
+            <td colspan="5" class="p-6 text-center text-slate-400 italic">No hay registros que coincidan con los criterios de búsqueda.</td>
+          </tr>
+        `;
+        return;
+      }
+
+      registros.forEach(r => {
+        const fechaObj = new Date(r.fecha);
+        const fechaFormateada = fechaObj.toLocaleString('es-ES', { 
+          day: '2-digit', month: '2-digit', year: 'numeric', 
+          hour: '2-digit', minute: '2-digit', second: '2-digit' 
+        });
+
+        const ubicacion = (r.latitud && r.latitud !== "No disponible") 
+          ? `<a href="https://www.google.com/maps?q=${r.latitud},${r.longitud}" target="_blank" class="text-slate-600 font-semibold hover:underline flex items-center gap-1">📍 Ver ubicación</a>`
+          : `<span class="text-slate-400 italic">No disponible</span>`;
+
+        const estadoAlerta = r.alerta !== "NO"
+          ? `<span class="px-2 py-1 bg-red-100 text-red-700 rounded-full font-bold text-[10px] block w-max max-w-[220px] truncate" title="${r.alerta}">⚠️ Alerta fraude</span>`
+          : `<span class="px-2 py-1 bg-emerald-100 text-emerald-700 rounded-full font-bold text-[10px] block w-max">Limpio</span>`;
+
+        const fila = document.createElement('tr');
+        fila.className = "hover:bg-slate-50 transition-colors";
+        fila.innerHTML = `
+          <td class="p-3 border-b border-slate-100 font-mono text-slate-600">${fechaFormateada}</td>
+          <td class="p-3 border-b border-slate-100 font-bold text-slate-700">${r.nombre}</td>
+          <td class="p-3 border-b border-slate-100">${ubicacion}</td>
+          <td class="p-3 border-b border-slate-100 font-mono text-slate-500">${r.fingerprint}</td>
+          <td class="p-3 border-b border-slate-100">${estadoAlerta}</td>
+        `;
+        cuerpo.appendChild(fila);
+      });
+    }
+
+    /**
+     * Filtra los datos locales según las entradas de los inputs y actualiza el renderizado.
+     */
+    function filtrarDatos() {
+      const busqueda = document.getElementById('filtroBusqueda').value.toLowerCase().trim();
+      const dispositivo = document.getElementById('filtroDispositivo').value.toLowerCase().trim();
+      const estado = document.getElementById('filtroAlerta').value;
+      const filtroFecha = document.getElementById('filtroFechaTipo').value;
+
+      let registrosFiltrados = DATOS_ORIGINALES;
+
+      // 1. Filtrado por buscador (ID usuario)
+      if (busqueda) {
+        registrosFiltrados = registrosFiltrados.filter(r => r.nombre.toLowerCase().includes(busqueda));
+      }
+
+      // 2. Filtrado por buscador de dispositivo (Hash o User Agent)
+      if (dispositivo) {
+        registrosFiltrados = registrosFiltrados.filter(r => 
+          r.fingerprint.toLowerCase().includes(dispositivo) || 
+          r.userAgent.toLowerCase().includes(dispositivo)
+        );
+      }
+
+      // 3. Filtrado por desplegable de estado
+      if (estado === "alertas") {
+        registrosFiltrados = registrosFiltrados.filter(r => r.alerta !== "NO");
+      } else if (estado === "singps") {
+        registrosFiltrados = registrosFiltrados.filter(r => r.latitud === "No disponible" || r.latitud === "");
+      }
+
+      // 4. Filtrado por fecha
+      if (filtroFecha !== 'todos') {
+        const ahora = new Date();
+        
+        registrosFiltrados = registrosFiltrados.filter(r => {
+          const fechaReg = new Date(r.fecha);
+          
+          if (filtroFecha === 'hoy') {
+            const limite = new Date(ahora);
+            limite.setHours(0,0,0,0);
+            return fechaReg >= limite;
+          }
+          
+          if (filtroFecha === 'semana') {
+            const limite = new Date(ahora);
+            const diaSemana = limite.getDay();
+            const dif = limite.getDate() - diaSemana + (diaSemana === 0 ? -6 : 1);
+            limite.setDate(dif);
+            limite.setHours(0,0,0,0);
+            return fechaReg >= limite;
+          }
+          
+          if (filtroFecha === 'mes') {
+            const limite = new Date(ahora.getFullYear(), ahora.getMonth(), 1);
+            return fechaReg >= limite;
+          }
+          
+          if (filtroFecha === 'trimestre') {
+            const trimestreActual = Math.floor(ahora.getMonth() / 3);
+            const limite = new Date(ahora.getFullYear(), trimestreActual * 3, 1);
+            return fechaReg >= limite;
+          }
+          
+          if (filtroFecha === 'rango') {
+            const iniVal = document.getElementById('fechaInicio').value;
+            const finVal = document.getElementById('fechaFin').value;
+            let cumple = true;
+            if (iniVal) {
+              const iniDate = new Date(iniVal);
+              iniDate.setHours(0,0,0,0);
+              cumple = cumple && (fechaReg >= iniDate);
+            }
+            if (finVal) {
+              const finDate = new Date(finVal);
+              finDate.setHours(23,59,59,999);
+              cumple = cumple && (fechaReg <= finDate);
+            }
+            return cumple;
+          }
+          
+          return true;
+        });
+      }
+
+      // Re-calcular métricas basadas en el filtro
+      const totalFiltrados = registrosFiltrados.length;
+      const unicosFiltrados = new Set(registrosFiltrados.map(r => r.nombre)).size;
+      const alertasFiltrados = registrosFiltrados.filter(r => r.alerta !== "NO").length;
+      const sinGpsFiltrados = registrosFiltrados.filter(r => r.latitud === "No disponible" || r.latitud === "").length;
+
+      document.getElementById('statTotal').innerText = totalFiltrados;
+      document.getElementById('statUnicos').innerText = unicosFiltrados;
+      document.getElementById('statAlertas').innerText = alertasFiltrados;
+      document.getElementById('statSinGps').innerText = sinGpsFiltrados;
+
+      // Alertas con estilo
+      const card = document.getElementById('cardAlertas');
+      const wrapper = document.getElementById('iconAlertasWrapper');
+      if (alertasFiltrados > 0) {
+        card.classList.remove('bg-white', 'border-slate-200');
+        card.classList.add('bg-red-50', 'border-red-200');
+        wrapper.className = "p-3 bg-red-100 text-red-600 rounded-lg animate-pulse";
+      } else {
+        card.classList.remove('bg-red-50', 'border-red-200');
+        card.classList.add('bg-white', 'border-slate-200');
+        wrapper.className = "p-3 bg-slate-100 text-slate-500 rounded-lg";
+      }
+
+      // 5. Aplicar ordenación
+      registrosFiltrados.sort((a, b) => {
+        let valA, valB;
+        
+        switch (COLUMNA_ORDEN) {
+          case "fecha":
+            valA = new Date(a.fecha).getTime();
+            valB = new Date(b.fecha).getTime();
+            break;
+          case "nombre":
+            valA = a.nombre.toLowerCase();
+            valB = b.nombre.toLowerCase();
+            break;
+          case "coordenadas":
+            valA = (a.latitud && a.latitud !== "No disponible") ? Number(a.latitud) : -999;
+            valB = (b.latitud && b.latitud !== "No disponible") ? Number(b.latitud) : -999;
+            break;
+          case "dispositivo":
+            valA = a.fingerprint.toLowerCase();
+            valB = b.fingerprint.toLowerCase();
+            break;
+          case "alerta":
+            valA = a.alerta === "NO" ? 0 : 1;
+            valB = b.alerta === "NO" ? 0 : 1;
+            break;
+          default:
+            return 0;
+        }
+        
+        if (valA < valB) return ORDEN_ASC ? -1 : 1;
+        if (valA > valB) return ORDEN_ASC ? 1 : -1;
+        return 0;
+      });
+
+      actualizarIconosOrden();
+      construirTabla(registrosFiltrados);
+      construirGraficos(registrosFiltrados, alertasFiltrados, totalFiltrados);
+    }
+
+    /**
+     * Cambia la columna activa para la ordenación y actualiza la tabla.
+     */
+    function ordenarPor(columna) {
+      if (COLUMNA_ORDEN === columna) {
+        ORDEN_ASC = !ORDEN_ASC;
+      } else {
+        COLUMNA_ORDEN = columna;
+        ORDEN_ASC = (columna === 'fecha') ? false : true;
+      }
+      filtrarDatos();
+    }
+
+    /**
+     * Actualiza visualmente los iconos en las cabeceras de la tabla.
+     */
+    function actualizarIconosOrden() {
+      const columnas = ["fecha", "nombre", "coordenadas", "dispositivo", "alerta"];
+      columnas.forEach(col => {
+        const icon = document.getElementById("icon-" + col);
+        if (!icon) return;
+        
+        if (COLUMNA_ORDEN === col) {
+          icon.setAttribute("data-lucide", ORDEN_ASC ? "chevron-up" : "chevron-down");
+          icon.classList.remove("text-slate-400");
+          icon.classList.add("text-slate-800");
+        } else {
+          icon.setAttribute("data-lucide", "arrow-up-down");
+          icon.classList.remove("text-slate-800");
+          icon.classList.add("text-slate-400");
+        }
+      });
+      lucide.createIcons();
+    }
+
+    /**
+     * Retorna la etiqueta de agrupación temporal según el tipo y la fecha
+     */
+    function obtenerClaveGrupo(fechaStr, tipoAgrupacion) {
+      const d = new Date(fechaStr);
+      if (isNaN(d.getTime())) return "Desconocido";
+      
+      if (tipoAgrupacion === 'semana') {
+        const lunes = new Date(d);
+        const day = lunes.getDay();
+        const diff = lunes.getDate() - day + (day === 0 ? -6 : 1);
+        lunes.setDate(diff);
+        return "Sem. " + lunes.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' });
+      }
+      
+      if (tipoAgrupacion === 'quincena') {
+        const dia = d.getDate();
+        const mes = d.toLocaleDateString('es-ES', { month: 'short' });
+        const año = d.getFullYear();
+        if (dia <= 15) {
+          return `1ªQ ${mes} ${año}`;
+        } else {
+          return `2ªQ ${mes} ${año}`;
+        }
+      }
+      
+      if (tipoAgrupacion === 'mes') {
+        return d.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+      }
+      
+      return d.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' });
+    }
+
+    /**
+     * Construye y actualiza los objetos de Chart.js
+     */
+    function construirGraficos(registros, alertas, total) {
+      // Destruir instancias previas si existen
+      if (chartFraudeInstance) chartFraudeInstance.destroy();
+      if (chartHistoricoInstance) chartHistoricoInstance.destroy();
+
+      // --- GRÁFICO 1: Distribución de Fraude (Doughnut) ---
+      const ctxFraude = document.getElementById('chartFraude').getContext('2d');
+      chartFraudeInstance = new Chart(ctxFraude, {
+        type: 'doughnut',
+        data: {
+          labels: ['Registros limpios', 'Alertas de fraude'],
+          datasets: [{
+            data: [total - alertas, alertas],
+            backgroundColor: ['#10b981', '#ef4444'], // Verde para limpio, rojo para alerta
+            borderWidth: 2,
+            borderColor: '#ffffff'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: { boxWidth: 12, font: { size: 10, family: 'Outfit, sans-serif' } }
+            }
+          }
+        }
+      });
+
+      // --- GRÁFICO 2: Volumen histórico agrupado según intervalo (Bar) ---
+      const tipoAgrupacion = document.getElementById('agrupacionTemporal').value;
+      const esApilado = document.getElementById('chartApilado').checked;
+
+      const gruposMap = {}; // clave -> { total: 0, limpios: 0, fraude: 0, orden: timestamp }
+      
+      registros.forEach(r => {
+        const clave = obtenerClaveGrupo(r.fecha, tipoAgrupacion);
+        if (!gruposMap[clave]) {
+          gruposMap[clave] = { total: 0, limpios: 0, fraude: 0, orden: new Date(r.fecha).getTime() };
+        }
+        gruposMap[clave].total++;
+        if (r.alerta === "NO") {
+          gruposMap[clave].limpios++;
+        } else {
+          gruposMap[clave].fraude++;
+        }
+      });
+
+      // Ordenar las claves cronológicamente
+      const clavesOrdenadas = Object.keys(gruposMap).sort((a, b) => gruposMap[a].orden - gruposMap[b].orden);
+      
+      let datasets = [];
+      if (esApilado) {
+        datasets = [
+          {
+            label: 'Alertas de fraude',
+            data: clavesOrdenadas.map(k => gruposMap[k].fraude),
+            backgroundColor: '#ef4444',
+            borderRadius: 4
+          },
+          {
+            label: 'Fichajes limpios',
+            data: clavesOrdenadas.map(k => gruposMap[k].limpios),
+            backgroundColor: '#10b981',
+            borderRadius: 4
+          }
+        ];
+      } else {
+        datasets = [{
+          label: 'Fichajes',
+          data: clavesOrdenadas.map(k => gruposMap[k].total),
+          backgroundColor: '#475569',
+          borderRadius: 4
+        }];
+      }
+
+      const ctxHistorico = document.getElementById('chartHistorico').getContext('2d');
+      chartHistoricoInstance = new Chart(ctxHistorico, {
+        type: 'bar',
+        data: {
+          labels: clavesOrdenadas,
+          datasets: datasets
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { 
+              display: esApilado, 
+              position: 'top',
+              labels: { boxWidth: 10, font: { size: 9 } }
+            }
+          },
+          scales: {
+            y: {
+              stacked: esApilado,
+              beginAtZero: true,
+              ticks: { stepSize: 5, font: { size: 9 } }
+            },
+            x: {
+              stacked: esApilado,
+              ticks: { font: { size: 9 } }
+            }
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>

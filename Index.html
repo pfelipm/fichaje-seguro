@@ -13,7 +13,7 @@
   <style>
     /* Efecto de marco de escaneo para la cámara */
     .scanner-target {
-      border: 3px solid rgba(13, 148, 136, 0.5);
+      border: 3px solid var(--color-acento, rgba(71, 85, 105, 0.5));
       border-radius: 1rem;
       position: relative;
     }
@@ -25,6 +25,17 @@
       border-radius: 50%;
       pointer-events: none;
     }
+    /* Estilos dinámicos para el color de acento */
+    .btn-acento {
+      background-color: var(--color-acento, #475569) !important;
+      box-shadow: 0 4px 6px -1px var(--color-acento-shadow, rgba(71, 85, 105, 0.2)) !important;
+    }
+    .btn-acento:hover:not(:disabled) {
+      filter: brightness(1.1);
+    }
+    .btn-acento:active:not(:disabled) {
+      filter: brightness(0.9);
+    }
   </style>
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen flex items-center justify-center p-4">
@@ -33,15 +44,17 @@
   <main class="w-full max-w-lg bg-slate-800 rounded-2xl shadow-2xl border border-slate-700/50 p-6 md:p-8 transition-all relative overflow-hidden">
     
     <!-- Decoración de Fondo Sutil -->
-    <div class="absolute -top-10 -right-10 w-40 h-40 bg-teal-500/10 rounded-full blur-3xl pointer-events-none"></div>
-    <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -top-10 -right-10 w-40 h-40 bg-slate-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-slate-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
     <!-- Cabecera -->
     <header class="text-center mb-8 relative">
-      <div class="inline-flex items-center justify-center p-3 bg-teal-500/10 text-teal-400 rounded-xl mb-3">
-        <i data-lucide="user-check" class="w-8 h-8"></i>
+      <div id="wrapperLogo" class="flex justify-center mb-3">
+        <div id="contenedorLogo" class="inline-flex items-center justify-center p-3 rounded-xl bg-slate-500/10 text-slate-400">
+          <i id="iconoPorDefecto" data-lucide="user-check" class="w-8 h-8"></i>
+        </div>
       </div>
-      <h1 class="text-2xl font-extrabold tracking-tight text-white">Registro de Asistencia</h1>
+      <h1 id="appTitulo" class="text-2xl font-extrabold tracking-tight text-white">Registro de asistencia</h1>
       <p class="text-sm text-slate-400 mt-1">Verificación automática de identidad y ubicación</p>
     </header>
 
@@ -55,7 +68,7 @@
     </section>
 
     <!-- Indicadores de Sensores Activos -->
-    <div class="grid grid-cols-2 gap-3 mb-6">
+    <div id="gridDiagnostico" class="grid grid-cols-2 gap-3 mb-6">
       <div id="sensorGps" class="bg-slate-800/40 border border-slate-700/50 rounded-xl p-3 flex items-center gap-3">
         <span class="relative flex h-3 w-3">
           <span id="gpsPing" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-slate-500 opacity-75"></span>
@@ -79,10 +92,10 @@
     <!-- Formulario de Entrada -->
     <form id="formAsistencia" class="space-y-6">
       
-      <!-- Paso 1: NIA del Estudiante -->
+      <!-- Paso 1: NIA del usuario -->
       <div>
-        <label for="inputEstudiante" class="block text-sm font-semibold text-slate-300 mb-2">
-          Número de Identificación del Alumno (NIA)
+        <label for="inputEstudiante" id="labelEstudiante" class="block text-sm font-semibold text-slate-300 mb-2">
+          Número de identificación del usuario (NIA)
         </label>
         <div class="relative">
           <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500">
@@ -92,7 +105,7 @@
             type="text" 
             id="inputEstudiante" 
             placeholder="Ej. 10045293"
-            class="w-full pl-10 pr-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-white transition-all text-sm"
+            class="w-full pl-10 pr-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent text-white transition-all text-sm"
             required
           >
         </div>
@@ -139,7 +152,7 @@
             onclick="accionCaptura()"
             class="flex-1 py-2.5 bg-slate-700 hover:bg-slate-600 active:bg-slate-800 text-slate-200 rounded-xl font-medium text-xs flex items-center justify-center gap-2 transition-all"
           >
-            <i data-lucide="camera" class="w-4 h-4 text-teal-400"></i>
+            <i data-lucide="camera" class="w-4 h-4 text-slate-400"></i>
             <span id="txtBtnCapturar">Tomar Foto</span>
           </button>
           
@@ -160,7 +173,7 @@
         type="submit" 
         id="btnEnviar"
         disabled
-        class="w-full py-4 bg-teal-600 hover:bg-teal-500 active:bg-teal-700 disabled:bg-slate-700 disabled:text-slate-500 text-white font-bold rounded-xl shadow-lg shadow-teal-900/20 flex items-center justify-center gap-2 transition-all"
+        class="btn-acento w-full py-4 disabled:bg-slate-700 disabled:text-slate-500 text-white font-bold rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all"
       >
         <i data-lucide="send" class="w-5 h-5"></i>
         <span>Enviar Asistencia</span>
@@ -204,6 +217,36 @@
     };
 
     window.onload = function() {
+      // Aplicar color de acento dinámico
+      const colorAcento = CONFIG.COLOR_ACENTO || '#475569';
+      document.documentElement.style.setProperty('--color-acento', colorAcento);
+      document.documentElement.style.setProperty('--color-acento-shadow', colorAcento + '33');
+      document.documentElement.style.setProperty('--color-acento-alpha', colorAcento + '1a');
+
+      // Aplicar mensaje de bienvenida
+      document.getElementById('appTitulo').innerText = CONFIG.MSG_BIENVENIDA || 'Registro de asistencia';
+
+      // Aplicar logotipo o icono por defecto
+      const wrapper = document.getElementById('contenedorLogo');
+      if (CONFIG.LOGO_URL && CONFIG.LOGO_URL.trim() !== '') {
+        wrapper.innerHTML = `<img src="${CONFIG.LOGO_URL.trim()}" alt="Logo" class="max-h-16 max-w-full object-contain rounded-lg">`;
+        wrapper.className = "inline-flex items-center justify-center";
+      } else {
+        wrapper.className = "inline-flex items-center justify-center p-3 rounded-xl";
+        wrapper.style.backgroundColor = 'var(--color-acento-alpha)';
+        document.getElementById('iconoPorDefecto').style.color = 'var(--color-acento)';
+      }
+
+      // Mostrar/Ocultar panel de diagnóstico
+      if (CONFIG.MOSTRAR_DIAGNOSTICO === false) {
+        document.getElementById('gridDiagnostico').classList.add('hidden');
+      }
+
+      // Aplicar etiqueta dinámica de identificación
+      const etiqueta = CONFIG.ETIQUETA_ID || 'NIA';
+      document.getElementById('labelEstudiante').innerText = etiqueta;
+      document.getElementById('inputEstudiante').placeholder = `Ingresa tu ${etiqueta}`;
+
       lucide.createIcons();
       generarHuellaDispositivo();
       verificarBloqueoDispositivo();
@@ -373,7 +416,7 @@
       const txtBtn = document.getElementById('txtBtnCapturar');
       
       // Cambiar texto e ícono de forma descriptiva
-      btnCapturar.innerHTML = `<i data-lucide="aperture" class="w-4 h-4 text-teal-400"></i> <span>Abrir Cámara</span>`;
+      btnCapturar.innerHTML = `<i data-lucide="aperture" class="w-4 h-4 text-slate-400"></i> <span>Abrir Cámara</span>`;
       lucide.createIcons();
     }
 
@@ -457,7 +500,7 @@
     }
 
     /**
-     * Reinicia la cámara si el alumno repite la foto
+     * Reinicia la cámara si el usuario repite la foto
      */
     function reiniciarCamara() {
       const video = document.getElementById('videoFeed');

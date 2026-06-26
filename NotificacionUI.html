@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <title><?= titulo ?></title>
+  <!-- Tailwind CSS para diseño moderno -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Iconos Lucide -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col justify-between overflow-hidden">
+
+  <?
+    let colorHeader = "from-emerald-600 to-emerald-500";
+    let icono = "check-circle";
+    let colorIconoFondo = "bg-emerald-100 text-emerald-600";
+    let colorIconoDetalle = "text-emerald-100";
+    let colorBoton = "bg-emerald-600 hover:bg-emerald-500";
+    
+    if (tipo === "error") {
+      colorHeader = "from-rose-600 to-rose-500";
+      icono = "alert-octagon";
+      colorIconoFondo = "bg-rose-100 text-rose-600";
+      colorIconoDetalle = "text-rose-100";
+      colorBoton = "bg-rose-600 hover:bg-rose-500";
+    } else if (tipo === "alerta" || tipo === "advertencia") {
+      colorHeader = "from-amber-600 to-amber-500";
+      icono = "alert-triangle";
+      colorIconoFondo = "bg-amber-100 text-amber-600";
+      colorIconoDetalle = "text-amber-100";
+      colorBoton = "bg-amber-600 hover:bg-amber-500";
+    } else if (tipo === "info") {
+      colorHeader = "from-sky-600 to-sky-500";
+      icono = "info";
+      colorIconoFondo = "bg-sky-100 text-sky-600";
+      colorIconoDetalle = "text-sky-100";
+      colorBoton = "bg-sky-600 hover:bg-sky-500";
+    }
+  ?>
+
+  <!-- Cabecera -->
+  <header class="bg-gradient-to-r <?= colorHeader ?> text-white px-6 py-4 shadow-md flex items-center gap-3">
+    <div class="p-2 bg-white/10 rounded-lg">
+      <i data-lucide="<?= icono ?>" class="w-6 h-6 <?= colorIconoDetalle ?>"></i>
+    </div>
+    <div>
+      <h1 class="text-lg font-bold"><?= titulo ?></h1>
+      <p class="text-xs <?= colorIconoDetalle ?> font-medium">Notificación del sistema</p>
+    </div>
+  </header>
+
+  <!-- Contenido -->
+  <main class="flex-1 p-6 flex flex-col justify-center">
+    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col items-center text-center gap-4">
+      <div class="w-16 h-16 rounded-full <?= colorIconoFondo ?> flex items-center justify-center shadow-inner">
+        <i data-lucide="<?= icono ?>" class="w-10 h-10"></i>
+      </div>
+      <p class="text-sm text-slate-600 leading-relaxed font-medium">
+        <?= mensaje ?>
+      </p>
+    </div>
+  </main>
+
+  <!-- Botones de Acción -->
+  <footer class="bg-slate-100 px-6 py-4 border-t border-slate-200 flex justify-end">
+    <button 
+      type="button" 
+      onclick="google.script.host.close()" 
+      class="px-5 py-2 <?= colorBoton ?> text-white font-semibold rounded-lg text-sm shadow-md transition-all"
+    >
+      Cerrar
+    </button>
+  </footer>
+
+  <script>
+    window.onload = function() {
+      lucide.createIcons();
+    };
+  </script>
+</body>
+</html>
