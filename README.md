@@ -47,7 +47,7 @@ Para garantizar la veracidad de cada registro, el sistema implementa múltiples 
    - Si está activa la obligatoriedad, impide el envío si no se obtienen coordenadas reales.
    - Traduce latitud y longitud a un enlace hipervínculo dinámico a Google Maps en la hoja de cálculo (`📍 Ver mapa`) utilizando la sintaxis `=HYPERLINK("https://www.google.com/maps?q=lat,lng"; "📍 Ver mapa")`.
 
-2. **Selfie de verificación (Biometría visual)**:
+2. **Selfie de verificación (biometría visual)**:
    - Captura la imagen usando la cámara frontal nativa del dispositivo.
    - Transmite los datos decodificados en Base64 al backend, donde se crea un archivo JPEG almacenado de forma segura en Google Drive (en la carpeta que elija el administrador o en la raíz del propio proyecto).
    - Genera un enlace directo a la visualización de la fotografía en la hoja de cálculo.
