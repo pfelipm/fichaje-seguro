@@ -8,7 +8,7 @@
   <img src="https://img.shields.io/badge/Google%20Apps%20Script-4285F4?style=for-the-badge&logo=google-apps-script&logoColor=white" alt="Google Apps Script Badge">
   <img src="https://img.shields.io/badge/Google%20Sheets-34A853?style=for-the-badge&logo=google-sheets&logoColor=white" alt="Google Sheets Badge">
   <img src="https://img.shields.io/badge/Tailwind%20CSS-38BDF8?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS Badge">
-  <img src="https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge" alt="License Badge">
+  <img src="https://img.shields.io/badge/License-GPL%20v3-blue?style=for-the-badge" alt="License Badge">
 </p>
 
 Un sistema moderno de control de asistencia y registro de presencia desarrollado en **Google Apps Script** y **Google Sheets**, diseñado para ejecutarse a coste cero en Google Workspace. El desarrollo incluye captura frontal de selfie, geolocalización por coordenadas GPS directas a Google Maps, y auditorías automáticas de fraude por huella digital del dispositivo y colisión temporal.
@@ -137,4 +137,4 @@ El script extiende la interfaz de Google Sheets agregando un menú personalizado
 
 ## Licencia
 
-Este proyecto está bajo la Licencia MIT. Para más detalles, consulta el archivo [LICENSE](LICENSE).
+Este proyecto está bajo la Licencia GPL v3. Para más detalles, consulta el archivo [LICENSE](LICENSE).
