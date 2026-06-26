@@ -34,7 +34,7 @@ Un sistema moderno de control de asistencia y registro de presencia desarrollado
 - 📊 **Panel de control interactivo**: Dashboard integrado en la hoja de cálculo mediante un diálogo HTML de gran formato con indicadores clave (Scorecards), gráficos interactivos a través de **Chart.js** (volumen de fichajes y distribución de seguridad) y filtros de búsqueda avanzados.
 - 🔍 **Buscadores avanzados**: Filtros rápidos por ID de usuario y por dispositivo (Hash/Navegador), además de filtros por estados (con alertas de fraude o sin coordenadas GPS).
 - 📅 **Control de rango temporal flexible**: Filtrado rápido de registros en tiempo real: Hoy, esta semana, este mes, este trimestre, o rango personalizado entre fechas.
-- ⚙️ **Parámetros configurables**: Panel visual integrado para ajustar dinámicamente las medidas de seguridad del backend (cooldown, umbrales de tiempo, obligatoriedad de GPS/Selfie) sin necesidad de tocar una línea de código.
+- ⚙️ **Parámetros configurables**: Panel visual integrado para ajustar dinámicamente las medidas de seguridad del backend (tiempo de contención, umbrales de tiempo, obligatoriedad de GPS y selfie) sin necesidad de tocar una línea de código.
 
 ---
 
@@ -52,7 +52,7 @@ Para garantizar la veracidad de cada registro, el sistema implementa múltiples 
    - Transmite los datos decodificados en Base64 al backend, donde se crea un archivo JPEG almacenado de forma segura en Google Drive (en la carpeta que elija el administrador o en la raíz del propio proyecto).
    - Genera un enlace directo a la visualización de la fotografía en la hoja de cálculo.
 
-3. **Huella digital del dispositivo (device fingerprinting)**:
+3. **Huella digital del dispositivo (identificación de dispositivo)**:
    - Calcula localmente un hash único hexadecimal a partir de especificaciones de hardware y entorno del navegador: resolución de pantalla, idioma del sistema, zona horaria (`timezoneOffset`), núcleos de CPU (`hardwareConcurrency`), profundidad de color y agente de usuario (`userAgent`).
    - Esto permite identificar el dispositivo físico del usuario de manera persistente sin necesidad de almacenar cookies intrusivas o datos personales de rastreo.
 
@@ -60,9 +60,9 @@ Para garantizar la veracidad de cada registro, el sistema implementa múltiples 
    - Si la medida está activada, el backend escanea el historial reciente del servidor dentro de una ventana de tiempo predefinida (por ejemplo, 15 minutos).
    - Si se detecta un fichaje con una huella digital idéntica pero con un ID de usuario diferente en un intervalo de tiempo muy corto (por ejemplo, menor a 120 segundos), el sistema levanta automáticamente una etiqueta de **"Alerta de fraude"** indicando el conflicto para auditoría inmediata.
 
-5. **Periodo de contención (Cooldown) en servidor**:
+5. **Periodo de contención en el servidor**:
    - Evita la duplicación o el spam de registros aplicando un bloqueo temporal controlado.
-   - El sistema rechaza inmediatamente el fichaje si el mismo ID de usuario o el mismo hash de dispositivo intenta registrar asistencia antes de que transcurran los minutos de cooldown mínimos establecidos por el administrador.
+   - El sistema rechaza inmediatamente el fichaje si el mismo ID de usuario o el mismo hash de dispositivo intenta registrar asistencia antes de que transcurran los minutos de contención mínimos establecidos por el administrador.
 
 ---
 
@@ -127,7 +127,7 @@ El script extiende la interfaz de Google Sheets agregando un menú personalizado
 
 ```bash
 ├── Código.gs                   # Backend de Apps Script (lógica de servidor, base de datos y auditoría)
-├── Index.html                  # Interfaz del usuario (cámara, geolocalización y fingerprinting)
+├── Index.html                  # Interfaz del usuario (cámara, geolocalización e identificación por huella de dispositivo)
 ├── DashboardUI.html            # Panel de mando analítico con Chart.js
 ├── AjustesUI.html              # Modal de configuración de parámetros de seguridad
 ├── NotificacionUI.html         # Plantilla HTML reutilizable para notificaciones estilizadas
