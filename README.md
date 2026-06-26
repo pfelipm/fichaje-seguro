@@ -89,7 +89,7 @@ El script extiende la interfaz de Google Sheets agregando un menú personalizado
 > [!TIP]
 > **Método rápido (Plantilla recomendada)**:
 > Para facilitar la distribución y ahorrar tiempo, puedes crear una copia directa de nuestra plantilla ya configurada con todo el código e interfaces listos para usar:
-> 🔗 **[Crear copia de la plantilla de Fichaje Seguro](https://docs.google.com/spreadsheets/d/1A8sYho15LgQV-W57dCttCdzqEsSvq5qBTNv-W-0uGwY/edit?usp=sharing)** (dentro de la hoja, haz clic en *Archivo > Hacer una copia*). Una vez creada la copia en tu cuenta de Google Drive, puedes saltar directamente al **Paso 2**.
+> 🔗 **[Crear copia de la plantilla de Fichaje Seguro](https://docs.google.com/spreadsheets/d/1A8sYho15LgQV-W57dCttCdzqEsSvq5qBTNv-W-0uGwY/copy)**. Una vez creada la copia en tu cuenta de Google Drive, puedes saltar directamente al **Paso 2**.
 
 ### Método manual (Paso a paso)
 
