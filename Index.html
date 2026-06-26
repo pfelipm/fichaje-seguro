@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Registro de Asistencia Universitario</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Tailwind CSS para diseño moderno -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Iconos Lucide -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <style>
+    /* Efecto de marco de escaneo para la cámara */
+    .scanner-target {
+      border: 3px solid rgba(13, 148, 136, 0.5);
+      border-radius: 1rem;
+      position: relative;
+    }
+    .scanner-target::before {
+      content: '';
+      position: absolute;
+      top: 10%; left: 10%; right: 10%; bottom: 10%;
+      border: 2px dashed rgba(255, 255, 255, 0.4);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex items-center justify-center p-4">
+
+  <!-- Contenedor Principal Adaptable (Mobile First) -->
+  <main class="w-full max-w-lg bg-slate-800 rounded-2xl shadow-2xl border border-slate-700/50 p-6 md:p-8 transition-all relative overflow-hidden">
+    
+    <!-- Decoración de Fondo Sutil -->
+    <div class="absolute -top-10 -right-10 w-40 h-40 bg-teal-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <!-- Cabecera -->
+    <header class="text-center mb-8 relative">
+      <div class="inline-flex items-center justify-center p-3 bg-teal-500/10 text-teal-400 rounded-xl mb-3">
+        <i data-lucide="user-check" class="w-8 h-8"></i>
+      </div>
+      <h1 class="text-2xl font-extrabold tracking-tight text-white">Registro de Asistencia</h1>
+      <p class="text-sm text-slate-400 mt-1">Verificación automática de identidad y ubicación</p>
+    </header>
+
+    <!-- Estado del Chequeo del Dispositivo (Bloqueo Temporal o Errores) -->
+    <section id="bannerBloqueo" class="hidden mb-6 p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-start gap-3">
+      <i data-lucide="shield-alert" class="w-5 h-5 text-amber-400 shrink-0 mt-0.5"></i>
+      <div>
+        <h4 class="font-bold text-amber-300 text-sm">Dispositivo en enfriamiento</h4>
+        <p id="mensajeBloqueo" class="text-xs text-slate-300 mt-0.5"></p>
+      </div>
+    </section>
+
+    <!-- Indicadores de Sensores Activos -->
+    <div class="grid grid-cols-2 gap-3 mb-6">
+      <div id="sensorGps" class="bg-slate-800/40 border border-slate-700/50 rounded-xl p-3 flex items-center gap-3">
+        <span class="relative flex h-3 w-3">
+          <span id="gpsPing" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-slate-500 opacity-75"></span>
+          <span id="gpsDot" class="relative inline-flex rounded-full h-3 w-3 bg-slate-500"></span>
+        </span>
+        <div class="text-left animate-pulse">
+          <p class="text-xs text-slate-400 font-medium">Servicios GPS</p>
+          <p id="txtGps" class="text-[10px] text-slate-500 truncate">Esperando...</p>
+        </div>
+      </div>
+      
+      <div id="sensorId" class="bg-slate-800/40 border border-slate-700/50 rounded-xl p-3 flex items-center gap-3">
+        <span class="flex h-3 w-3 rounded-full bg-emerald-500"></span>
+        <div class="text-left">
+          <p class="text-xs text-slate-400 font-medium">Huella Segura</p>
+          <p id="txtHuella" class="text-[10px] text-emerald-400 font-mono">Generando...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Formulario de Entrada -->
+    <form id="formAsistencia" class="space-y-6">
+      
+      <!-- Paso 1: NIA del Estudiante -->
+      <div>
+        <label for="inputEstudiante" class="block text-sm font-semibold text-slate-300 mb-2">
+          Número de Identificación del Alumno (NIA)
+        </label>
+        <div class="relative">
+          <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500">
+            <i data-lucide="id-card" class="w-5 h-5"></i>
+          </span>
+          <input 
+            type="text" 
+            id="inputEstudiante" 
+            placeholder="Ej. 10045293"
+            class="w-full pl-10 pr-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-white transition-all text-sm"
+            required
+          >
+        </div>
+      </div>
+
+      <!-- Paso 2: Cámara y Selfie (Se muestra u oculta dinámicamente) -->
+      <div id="contenedorSelfie" class="hidden space-y-3">
+        <label class="block text-sm font-semibold text-slate-300">
+          Captura Facial de Verificación
+        </label>
+        
+        <!-- Visor de la cámara con soporte de Fallback -->
+        <div class="scanner-target overflow-hidden aspect-video bg-slate-950 flex flex-col items-center justify-center p-4">
+          <video id="videoFeed" class="w-full h-full object-cover scale-x-[-1]" autoplay playsinline muted></video>
+          
+          <!-- Elemento de interfaz alternativo para Cámara Nativa (Fallback) -->
+          <div id="placeholderCamaraNativa" class="hidden flex flex-col items-center justify-center text-center space-y-2 pointer-events-none">
+            <div class="p-3 bg-amber-500/10 rounded-full text-amber-400 mb-1">
+              <i data-lucide="camera-off" class="w-8 h-8"></i>
+            </div>
+            <p class="text-xs text-slate-300 font-semibold">Cámara en vivo bloqueada por el navegador</p>
+            <p class="text-[10px] text-slate-500 max-w-xs leading-relaxed">No te preocupes. Pulsa el botón inferior para abrir la cámara de fotos nativa de tu dispositivo.</p>
+          </div>
+
+          <!-- Input oculto para gatillar la cámara del sistema operativo -->
+          <input 
+            type="file" 
+            id="inputCamaraNativa" 
+            accept="image/*" 
+            capture="user" 
+            class="hidden" 
+            onchange="procesarFotoNativa(this)"
+          >
+
+          <canvas id="canvasFoto" class="hidden w-full h-full object-cover"></canvas>
+          <img id="imgPrevisualizacion" class="hidden w-full h-full object-cover scale-x-[-1]" alt="Tu Selfie">
+        </div>
+
+        <!-- Botones de Control de la Cámara -->
+        <div class="flex gap-2">
+          <button 
+            type="button" 
+            id="btnCapturar" 
+            onclick="accionCaptura()"
+            class="flex-1 py-2.5 bg-slate-700 hover:bg-slate-600 active:bg-slate-800 text-slate-200 rounded-xl font-medium text-xs flex items-center justify-center gap-2 transition-all"
+          >
+            <i data-lucide="camera" class="w-4 h-4 text-teal-400"></i>
+            <span id="txtBtnCapturar">Tomar Foto</span>
+          </button>
+          
+          <button 
+            type="button" 
+            id="btnRepetir" 
+            onclick="reiniciarCamara()"
+            class="hidden flex-1 py-2.5 bg-slate-700 hover:bg-slate-600 active:bg-slate-800 text-slate-200 rounded-xl font-medium text-xs flex items-center justify-center gap-2 transition-all"
+          >
+            <i data-lucide="rotate-ccw" class="w-4 h-4 text-amber-400"></i>
+            Tomar otra
+          </button>
+        </div>
+      </div>
+
+      <!-- Botón de Envío -->
+      <button 
+        type="submit" 
+        id="btnEnviar"
+        disabled
+        class="w-full py-4 bg-teal-600 hover:bg-teal-500 active:bg-teal-700 disabled:bg-slate-700 disabled:text-slate-500 text-white font-bold rounded-xl shadow-lg shadow-teal-900/20 flex items-center justify-center gap-2 transition-all"
+      >
+        <i data-lucide="send" class="w-5 h-5"></i>
+        <span>Enviar Asistencia</span>
+      </button>
+
+    </form>
+  </main>
+
+  <!-- MODALES DE DIÁLOGO PERSONALIZADOS -->
+  <div id="modalNotificacion" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-800 border border-slate-700 w-full max-w-sm rounded-2xl p-6 shadow-2xl text-center transform transition-all scale-95 opacity-0 duration-300" id="modalBox">
+      
+      <!-- Icono Dinámico del Modal -->
+      <div id="modalIconContainer" class="mx-auto flex items-center justify-center w-14 h-14 rounded-full mb-4"></div>
+      
+      <h3 id="modalTitulo" class="text-lg font-bold text-white mb-2">Título</h3>
+      <p id="modalMensaje" class="text-sm text-slate-300 mb-6">Mensaje informativo...</p>
+      
+      <button 
+        type="button" 
+        onclick="cerrarModal()" 
+        class="w-full py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-semibold text-sm transition-colors"
+      >
+        Entendido
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Inyección de Ajustes del Servidor
+    const CONFIG = JSON.parse('<?= ajustes ?>');
+
+    // Estado local del cliente
+    let variablesGlobales = {
+      latitud: null,
+      longitud: null,
+      fingerprint: null,
+      fotoBase64: null,
+      camaraActiva: false,
+      videoStream: null
+    };
+
+    window.onload = function() {
+      lucide.createIcons();
+      generarHuellaDispositivo();
+      verificarBloqueoDispositivo();
+      
+      // Intentamos obtener la geolocalización siempre que esté habilitada en Ajustes
+      solicitarGeolocalizacion();
+      
+      inicializarFlujoFormulario();
+    };
+
+    /**
+     * Genera un Hash único para el dispositivo en base a parámetros del hardware y software.
+     */
+    function generarHuellaDispositivo() {
+      try {
+        const specs = [
+          navigator.userAgent,
+          screen.width + "x" + screen.height,
+          screen.colorDepth,
+          navigator.language,
+          new Date().getTimezoneOffset()
+        ].join("###");
+        
+        let hash = 0;
+        for (let i = 0; i < specs.length; i++) {
+          const char = specs.charCodeAt(i);
+          hash = ((hash << 5) - hash) + char;
+          hash |= 0;
+        }
+        
+        const huellaHex = Math.abs(hash).toString(16).toUpperCase();
+        variablesGlobales.fingerprint = huellaHex;
+        
+        document.getElementById('txtHuella').innerText = "ID: " + huellaHex;
+      } catch (e) {
+        document.getElementById('txtHuella').innerText = "ERROR HASH";
+      }
+    }
+
+    /**
+     * Solicita permisos de Geolocalización y responde al parámetro de obligatoriedad del profesor.
+     */
+    function solicitarGeolocalizacion() {
+      const ping = document.getElementById('gpsPing');
+      const dot = document.getElementById('gpsDot');
+      const txtGps = document.getElementById('txtGps');
+
+      if (!navigator.geolocation) {
+        txtGps.innerText = "No soportado";
+        if (CONFIG.MEDIDA_GPS) {
+          alertarModal("error", "Geolocalización", "Este navegador no soporta los servicios de ubicación GPS, requerida para poder fichar.");
+        }
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        function(position) {
+          variablesGlobales.latitud = position.coords.latitude;
+          variablesGlobales.longitud = position.coords.longitude;
+          
+          // Actualizar indicador visual a verde exitoso
+          ping.classList.remove('bg-slate-500', 'bg-red-500');
+          ping.classList.add('bg-emerald-500');
+          dot.classList.remove('bg-slate-500', 'bg-red-500');
+          dot.classList.add('bg-emerald-500');
+          
+          txtGps.innerText = `📍 ${position.coords.latitude.toFixed(4)}, ${position.coords.longitude.toFixed(4)}`;
+          txtGps.classList.remove('text-slate-500', 'text-red-400');
+          txtGps.classList.add('text-emerald-400');
+          
+          evaluarEstadoBotonEnviar();
+        },
+        function(error) {
+          ping.classList.remove('bg-slate-500', 'bg-emerald-500');
+          ping.classList.add('bg-red-500');
+          dot.classList.remove('bg-slate-500', 'bg-emerald-500');
+          dot.classList.add('bg-red-500');
+          
+          txtGps.innerText = CONFIG.MEDIDA_GPS ? "Acceso denegado" : "Omitido";
+          txtGps.classList.remove('text-slate-500', 'text-emerald-400');
+          txtGps.classList.add('text-red-400');
+          
+          // BLOQUEO CRÍTICO: Si es obligatoria y se deniega, notificamos al estudiante y bloqueamos acción.
+          if (CONFIG.MEDIDA_GPS) {
+            alertarModal("error", "Error de Ubicación", "El profesor ha configurado el GPS como obligatorio para este fichaje. Por favor, concede permisos de ubicación en tu navegador para continuar.");
+          } else {
+            // Si el profesor no la exige, permitimos evaluar el botón de envío
+            evaluarEstadoBotonEnviar();
+          }
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      );
+    }
+
+    /**
+     * Revisa si este dispositivo tiene prohibido registrar asistencia temporalmente.
+     */
+    function verificarBloqueoDispositivo() {
+      if (!CONFIG.MEDIDA_BLOQUEO) return;
+
+      const ultimoRegistro = localStorage.getItem('asistencia_timestamp');
+      if (ultimoRegistro) {
+        const tiempoTranscurridoMinutos = (Date.now() - parseInt(ultimoRegistro)) / 60000;
+        const contencionNecesaria = CONFIG.TIEMPO_CONTENCION_MIN;
+
+        if (tiempoTranscurridoMinutos < contencionNecesaria) {
+          const minutosRestantes = Math.ceil(contencionNecesaria - tiempoTranscurridoMinutos);
+          
+          const banner = document.getElementById('bannerBloqueo');
+          const mensaje = document.getElementById('mensajeBloqueo');
+          banner.classList.remove('hidden');
+          mensaje.innerText = `Ya has enviado una asistencia recientemente desde este móvil. Por favor, espera ${minutosRestantes} minuto(s) para realizar otro registro.`;
+          
+          document.getElementById('inputEstudiante').disabled = true;
+        }
+      }
+    }
+
+    /**
+     * Inicializa componentes visuales según las medidas de seguridad cargadas.
+     */
+    function inicializarFlujoFormulario() {
+      if (CONFIG.MEDIDA_SELFIE) {
+        document.getElementById('contenedorSelfie').classList.remove('hidden');
+        arrancarVideo();
+      }
+
+      const form = document.getElementById('formAsistencia');
+      form.onsubmit = function(e) {
+        e.preventDefault();
+        procesarEnvioAsistencia();
+      }
+    }
+
+    /**
+     * Enciende la cámara frontal del dispositivo.
+     * Si falla, activa la redirección al flujo nativo.
+     */
+    async function arrancarVideo() {
+      const video = document.getElementById('videoFeed');
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "user" },
+          audio: false
+        });
+        variablesGlobales.videoStream = stream;
+        video.srcObject = stream;
+        variablesGlobales.camaraActiva = true;
+        video.classList.remove('hidden');
+        document.getElementById('placeholderCamaraNativa').classList.add('hidden');
+      } catch (err) {
+        console.warn("Fallo al iniciar el stream de cámara interactiva. Activando soporte de fallback nativo.", err);
+        variablesGlobales.camaraActiva = false;
+        
+        // Escondemos el visor HTML5 y mostramos el aviso visual de fallback
+        video.classList.add('hidden');
+        mostrarInterfazCamaraNativa();
+      }
+    }
+
+    /**
+     * Altera el diseño de la cámara para habilitar la captura nativa móvil sin video continuo.
+     */
+    function mostrarInterfazCamaraNativa() {
+      document.getElementById('placeholderCamaraNativa').classList.remove('hidden');
+      const btnCapturar = document.getElementById('btnCapturar');
+      const txtBtn = document.getElementById('txtBtnCapturar');
+      
+      // Cambiar texto e ícono de forma descriptiva
+      btnCapturar.innerHTML = `<i data-lucide="aperture" class="w-4 h-4 text-teal-400"></i> <span>Abrir Cámara</span>`;
+      lucide.createIcons();
+    }
+
+    /**
+     * Decisión de acción al pulsar el botón principal de la cámara
+     */
+    function accionCaptura() {
+      if (variablesGlobales.camaraActiva) {
+        // Modo A: Captura en caliente de stream activo
+        capturarFoto();
+      } else {
+        // Modo B: Gatillar el input file del sistema operativo (Cámara nativa iOS/Android)
+        document.getElementById('inputCamaraNativa').click();
+      }
+    }
+
+    /**
+     * Toma una captura instantánea del visor de video continuo
+     */
+    function capturarFoto() {
+      const video = document.getElementById('videoFeed');
+      const canvas = document.getElementById('canvasFoto');
+      const img = document.getElementById('imgPrevisualizacion');
+      const btnCapturar = document.getElementById('btnCapturar');
+      const btnRepetir = document.getElementById('btnRepetir');
+
+      if (!variablesGlobales.camaraActiva) return;
+
+      const context = canvas.getContext('2d');
+      canvas.width = video.videoWidth || 640;
+      canvas.height = video.videoHeight || 480;
+      
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const b64 = canvas.toDataURL('image/jpeg', 0.85);
+      variablesGlobales.fotoBase64 = b64;
+
+      apagarCamara();
+
+      video.classList.add('hidden');
+      img.src = b64;
+      img.classList.remove('hidden');
+      
+      btnCapturar.classList.add('hidden');
+      btnRepetir.classList.remove('hidden');
+
+      evaluarEstadoBotonEnviar();
+    }
+
+    /**
+     * Procesa y lee la foto devuelta por la app de cámara nativa del sistema operativo
+     */
+    function procesarFotoNativa(input) {
+      if (!input.files || !input.files[0]) return;
+      
+      const archivo = input.files[0];
+      const reader = new FileReader();
+      
+      reader.onload = function(e) {
+        const b64 = e.target.result;
+        variablesGlobales.fotoBase64 = b64;
+        
+        const img = document.getElementById('imgPrevisualizacion');
+        const placeholder = document.getElementById('placeholderCamaraNativa');
+        const btnCapturar = document.getElementById('btnCapturar');
+        const btnRepetir = document.getElementById('btnRepetir');
+        
+        // Ocultar placeholder de error
+        if (placeholder) placeholder.classList.add('hidden');
+        
+        // Cargar previsualización estática del archivo tomado
+        img.src = b64;
+        img.classList.remove('hidden');
+        
+        btnCapturar.classList.add('hidden');
+        btnRepetir.classList.remove('hidden');
+        
+        evaluarEstadoBotonEnviar();
+      };
+      
+      reader.readAsDataURL(archivo);
+    }
+
+    /**
+     * Reinicia la cámara si el alumno repite la foto
+     */
+    function reiniciarCamara() {
+      const video = document.getElementById('videoFeed');
+      const img = document.getElementById('imgPrevisualizacion');
+      const btnCapturar = document.getElementById('btnCapturar');
+      const btnRepetir = document.getElementById('btnRepetir');
+      const placeholder = document.getElementById('placeholderCamaraNativa');
+
+      img.classList.add('hidden');
+      img.src = "";
+      
+      variablesGlobales.fotoBase64 = null;
+      evaluarEstadoBotonEnviar();
+
+      if (variablesGlobales.camaraActiva) {
+        video.classList.remove('hidden');
+        btnCapturar.classList.remove('hidden');
+        btnRepetir.classList.add('hidden');
+        arrancarVideo();
+      } else {
+        if (placeholder) placeholder.classList.remove('hidden');
+        btnCapturar.classList.remove('hidden');
+        btnRepetir.classList.add('hidden');
+      }
+    }
+
+    function apagarCamara() {
+      if (variablesGlobales.videoStream) {
+        variablesGlobales.videoStream.getTracks().forEach(track => track.stop());
+        variablesGlobales.videoStream = null;
+      }
+      variablesGlobales.camaraActiva = false;
+    }
+
+    /**
+     * Valida dinámicamente si el formulario está listo para enviarse.
+     * Incorpora el bloqueo si el GPS obligatorio no está resuelto.
+     */
+    function evaluarEstadoBotonEnviar() {
+      const btn = document.getElementById('btnEnviar');
+      
+      // REQUISITO CLAVE: Si MEDIDA_GPS está activa, requerimos obligatoriamente lat y long
+      const gpsListo = !CONFIG.MEDIDA_GPS || (variablesGlobales.latitud !== null && variablesGlobales.longitud !== null);
+      const fotoLista = !CONFIG.MEDIDA_SELFIE || variablesGlobales.fotoBase64 !== null;
+      
+      let bloqueado = false;
+      if (CONFIG.MEDIDA_BLOQUEO) {
+        const ultimoRegistro = localStorage.getItem('asistencia_timestamp');
+        if (ultimoRegistro) {
+          const transcurrido = (Date.now() - parseInt(ultimoRegistro)) / 60000;
+          if (transcurrido < CONFIG.TIEMPO_CONTENCION_MIN) bloqueado = true;
+        }
+      }
+
+      if (gpsListo && fotoLista && !bloqueado) {
+        btn.disabled = false;
+      } else {
+        btn.disabled = true;
+      }
+    }
+
+    /**
+     * Envía los datos al servidor de Google Apps Script
+     */
+    function procesarEnvioAsistencia() {
+      const nia = document.getElementById('inputEstudiante').value.trim();
+      const btnEnviar = document.getElementById('btnEnviar');
+      
+      if (!nia) {
+        alertarModal("error", "Campo incompleto", "Por favor ingresa tu NIA antes de enviar.");
+        return;
+      }
+
+      // Mapeamos el valor del NIA a la propiedad 'nombre' para que Código.gs 
+      // siga registrando correctamente sin requerir cambios en el backend.
+      const payload = {
+        nombre: nia,
+        latitud: variablesGlobales.latitud,
+        longitud: variablesGlobales.longitud,
+        fotoBase64: variablesGlobales.fotoBase64,
+        fingerprint: variablesGlobales.fingerprint,
+        resolucion: `${screen.width}x${screen.height}`,
+        userAgent: navigator.userAgent
+      };
+
+      btnEnviar.disabled = true;
+      btnEnviar.innerHTML = `<span class="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent inline-block mr-2"></span> Guardando Registro...`;
+
+      google.script.run
+        .withSuccessHandler(function(respuesta) {
+          btnEnviar.innerHTML = `<i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-300"></i> Completado`;
+          
+          if (respuesta.startsWith("Error")) {
+            alertarModal("error", "Error de Validación", respuesta);
+            btnEnviar.disabled = false;
+            btnEnviar.innerHTML = `<i data-lucide="send" class="w-5 h-5"></i> <span>Enviar Asistencia</span>`;
+            lucide.createIcons();
+          } else {
+            if (CONFIG.MEDIDA_BLOQUEO) {
+              localStorage.setItem('asistencia_timestamp', Date.now().toString());
+            }
+            
+            alertarModal("exito", "Registro Completado", respuesta);
+            document.getElementById('formAsistencia').reset();
+            if (CONFIG.MEDIDA_SELFIE) {
+              document.getElementById('imgPrevisualizacion').classList.add('hidden');
+              document.getElementById('btnCapturar').classList.remove('hidden');
+              document.getElementById('btnRepetir').classList.add('hidden');
+              variablesGlobales.fotoBase64 = null;
+              
+              if (variablesGlobales.camaraActiva) {
+                document.getElementById('videoFeed').classList.remove('hidden');
+                arrancarVideo();
+              } else {
+                document.getElementById('placeholderCamaraNativa').classList.remove('hidden');
+              }
+            }
+            verificarBloqueoDispositivo();
+          }
+        })
+        .withFailureHandler(function(err) {
+          alertarModal("error", "Fallo de Comunicación", "No se pudo conectar con el servidor de Google Sheets. Intenta de nuevo.");
+          btnEnviar.disabled = false;
+          btnEnviar.innerHTML = `<i data-lucide="send" class="w-5 h-5"></i> <span>Enviar Asistencia</span>`;
+          lucide.createIcons();
+        })
+        .registrarEstudiante(payload);
+    }
+
+    /**
+     * Ventana emergente estética personalizada
+     */
+    function alertarModal(tipo, titulo, mensaje) {
+      const modal = document.getElementById('modalNotificacion');
+      const box = document.getElementById('modalBox');
+      const mIcon = document.getElementById('modalIconContainer');
+      const mTitulo = document.getElementById('modalTitulo');
+      const mMensaje = document.getElementById('modalMensaje');
+
+      mTitulo.innerText = titulo;
+      mMensaje.innerText = mensaje;
+
+      if (tipo === "exito") {
+        mIcon.className = "mx-auto flex items-center justify-center w-14 h-14 rounded-full mb-4 bg-emerald-500/10 text-emerald-400";
+        mIcon.innerHTML = `<i data-lucide="check" class="w-8 h-8"></i>`;
+      } else {
+        mIcon.className = "mx-auto flex items-center justify-center w-14 h-14 rounded-full mb-4 bg-red-500/10 text-red-400";
+        mIcon.innerHTML = `<i data-lucide="x" class="w-8 h-8"></i>`;
+      }
+
+      lucide.createIcons();
+
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        box.classList.remove('scale-95', 'opacity-0');
+        box.classList.add('scale-100', 'opacity-100');
+      }, 50);
+    }
+
+    function cerrarModal() {
+      const modal = document.getElementById('modalNotificacion');
+      const box = document.getElementById('modalBox');
+      
+      box.classList.remove('scale-100', 'opacity-100');
+      box.classList.add('scale-95', 'opacity-0');
+      
+      setTimeout(() => {
+        modal.classList.add('hidden');
+      }, 300);
+    }
+  </script>
+</body>
+</html>
