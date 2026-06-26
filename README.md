@@ -52,7 +52,7 @@ Para garantizar la veracidad de cada registro, el sistema implementa múltiples 
    - Transmite los datos decodificados en Base64 al backend, donde se crea un archivo JPEG almacenado de forma segura en Google Drive (en la carpeta que elija el administrador o en la raíz del propio proyecto).
    - Genera un enlace directo a la visualización de la fotografía en la hoja de cálculo.
 
-3. **Huella digital del dispositivo (Device Fingerprinting)**:
+3. **Huella digital del dispositivo (device fingerprinting)**:
    - Calcula localmente un hash único hexadecimal a partir de especificaciones de hardware y entorno del navegador: resolución de pantalla, idioma del sistema, zona horaria (`timezoneOffset`), núcleos de CPU (`hardwareConcurrency`), profundidad de color y agente de usuario (`userAgent`).
    - Esto permite identificar el dispositivo físico del usuario de manera persistente sin necesidad de almacenar cookies intrusivas o datos personales de rastreo.
 
