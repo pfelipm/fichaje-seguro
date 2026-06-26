@@ -70,16 +70,16 @@ Para garantizar la veracidad de cada registro, el sistema implementa múltiples 
 
 El script extiende la interfaz de Google Sheets agregando un menú personalizado llamado `🔒 Fichaje Seguro` estructurado en secciones independientes:
 
-- **Sección 1: Inicialización**
+- **Sección 1: inicialización**
   - `⚙️ Inicializar sistema`: Analiza metadatos del proyecto y crea las hojas iniciales. Si el sistema ya estaba configurado, lanza un diálogo de advertencia para evitar sobrescrituras accidentales.
-- **Sección 2: Operaciones y Configuración**
+- **Sección 2: operaciones y configuración**
   - `🔧 Configurar parámetros`: Abre la ventana de configuración para administrar niveles de seguridad e interfaces.
   - `🚀 Guía de despliegue`: Guía paso a paso sobre cómo publicar el formulario como aplicación web pública en Google Apps Script.
-- **Sección 3: Panel Analítico**
+- **Sección 3: panel analítico**
   - `📊 Panel de control`: Dashboard analítico interactivo de gran tamaño con gráficos de rendimiento y tablas de auditoría.
-- **Sección 4: Herramientas de Desarrollo**
+- **Sección 4: herramientas de desarrollo**
   - `🧪 Generar datos de prueba`: Genera de manera limpia 50 registros cronológicamente espaciados a lo largo de 15 días (incluyendo escenarios normales y simulaciones de fraude por colisión de huellas) para validar el comportamiento del panel.
-- **Sección 5: Información**
+- **Sección 5: información**
   - `ℹ️ Acerca de...`: Información general del proyecto y autoría.
 
 ---
@@ -87,13 +87,13 @@ El script extiende la interfaz de Google Sheets agregando un menú personalizado
 ## Instalación y configuración
 
 > [!TIP]
-> **Método rápido (Plantilla recomendada)**:
+> **Método rápido (plantilla recomendada)**:
 > Para facilitar la distribución y ahorrar tiempo, puedes crear una copia directa de nuestra plantilla ya configurada con todo el código e interfaces listos para usar:
 > 🔗 **[Crear copia de la plantilla de Fichaje Seguro](https://docs.google.com/spreadsheets/d/1A8sYho15LgQV-W57dCttCdzqEsSvq5qBTNv-W-0uGwY/copy)**. Una vez creada la copia en tu cuenta de Google Drive, puedes saltar directamente al **Paso 2**.
-
-### Método manual (Paso a paso)
-
-#### Paso 1: Importación del código
+> 
+> ### Método manual (paso a paso)
+> 
+> #### Paso 1: importación del código
 1. Crea una nueva hoja de cálculo en **Google Sheets**.
 2. Ve a **Extensiones > Apps Script**.
 3. Reemplaza el contenido de `Código.gs` con el código del backend de este repositorio.
@@ -107,13 +107,13 @@ El script extiende la interfaz de Google Sheets agregando un menú personalizado
    - `AcercaDe.html` (Información del proyecto)
    - `DespliegueUI.html` (Guía de publicación)
 
-### Paso 2: Inicialización del sistema
+### Paso 2: inicialización del sistema
 1. Recarga tu hoja de cálculo.
 2. Haz clic en el menú contextual **🔒 Fichaje Seguro > ⚙️ Inicializar sistema**.
 3. Otorga los permisos requeridos por el script (lectura/escritura en Sheets y Google Drive).
 4. El script creará automáticamente las hojas necesarias y ocultará la hoja de parámetros (`Ajustes`) para mayor protección.
 
-### Paso 3: Publicación de la aplicación web
+### Paso 3: publicación de la aplicación web
 1. En el editor de Apps Script, haz clic en **Implementar > Nueva implementación**.
 2. Selecciona el tipo de implementación **Aplicación web**.
 3. Configura:
