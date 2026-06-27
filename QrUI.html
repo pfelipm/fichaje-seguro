@@ -3,7 +3,7 @@
 <head>
   <base target="_top">
   <meta charset="UTF-8">
-  <title>Código QR de Fichaje</title>
+  <title>Codigo QR de Fichaje</title>
   <!-- Tailwind CSS para diseño moderno -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Iconos Lucide -->
@@ -17,8 +17,8 @@
       <i data-lucide="qr-code" class="w-6 h-6 text-slate-200"></i>
     </div>
     <div>
-      <h1 class="text-lg font-bold">Acceso por código QR</h1>
-      <p class="text-xs text-slate-300">Genera el código para el registro de asistencia en el aula</p>
+      <h1 class="text-lg font-bold">Acceso por codigo QR</h1>
+      <p class="text-xs text-slate-300">Genera el codigo para el registro de asistencia en el aula</p>
     </div>
   </header>
 
@@ -31,32 +31,20 @@
       <p class="text-xs text-slate-500 font-medium">Obteniendo enlace de fichaje...</p>
     </div>
 
-    <!-- Vista 1: QR Generado con éxito (Oculta por defecto hasta validar) -->
+    <!-- Vista 1: QR Generado con exito (Oculta por defecto hasta validar) -->
     <div id="vistaQr" class="w-full hidden flex flex-col items-center gap-5">
       <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center gap-4">
         <!-- Imagen del QR -->
         <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 shadow-inner relative group">
-          <img id="qrImage" src="" class="w-48 h-48" alt="Código QR de Fichaje">
+          <img id="qrImage" src="" class="w-48 h-48" alt="Codigo QR de Fichaje">
         </div>
         
         <div class="flex gap-2">
-          <!-- Botón de Pantalla Completa -->
-          <button 
-            type="button" 
-            onclick="abrirFullScreen()" 
-            class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all"
-          >
-            <i data-lucide="maximize" class="w-3.5 h-3.5"></i> Pantalla completa
-          </button>
+          <!-- Boton de Pantalla Completa -->
+          <button type="button" onclick="abrirFullScreen()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all"><i data-lucide="maximize" class="w-3.5 h-3.5"></i> Pantalla completa</button>
           
-          <!-- Botón de Configuración manual -->
-          <button 
-            type="button" 
-            onclick="mostrarConfigManual()" 
-            class="px-3 py-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all"
-          >
-            <i data-lucide="edit-3" class="w-3.5 h-3.5"></i> Editar URL
-          </button>
+          <!-- Boton de Configuracion manual -->
+          <button type="button" onclick="mostrarConfigManual()" class="px-3 py-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i> Editar URL</button>
         </div>
       </div>
 
@@ -66,30 +54,23 @@
           <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Enlace del formulario</p>
           <a id="linkWebApp" href="#" target="_blank" class="text-sm font-medium text-slate-600 hover:text-slate-800 underline truncate block mt-0.5"></a>
         </div>
-        <button 
-          type="button" 
-          onclick="copiarUrl()" 
-          id="btnCopiar"
-          class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-semibold flex items-center gap-1.5 transition-all shrink-0"
-        >
-          <i data-lucide="copy" class="w-4 h-4"></i> Copiar
-        </button>
+        <button type="button" onclick="copiarUrl()" id="btnCopiar" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-semibold flex items-center gap-1.5 transition-all shrink-0"><i data-lucide="copy" class="w-4 h-4"></i> Copiar</button>
       </div>
     </div>
 
-    <!-- Vista 2: Falta URL (Configuración Manual / Fallback - Oculta por defecto) -->
+    <!-- Vista 2: Falta URL (Configuracion Manual / Fallback - Oculta por defecto) -->
     <div id="vistaConfigManual" class="w-full hidden flex flex-col gap-4">
       <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-3">
         <h2 class="text-sm font-bold text-slate-700 flex items-center gap-2">
-          <i data-lucide="info" class="w-4 h-4 text-amber-500"></i> Configuración de URL
+          <i data-lucide="info" class="w-4 h-4 text-amber-500"></i> Configuracion de URL
         </h2>
         
         <p class="text-xs text-slate-500 leading-relaxed">
-          Para que el código QR funcione correctamente, es necesario guardar la URL del despliegue en producción (<code class="bg-slate-100 px-1 rounded text-slate-700">/exec</code>).
+          Para que el codigo QR funcione correctamente, es necesario guardar la URL del despliegue en produccion (<code class="bg-slate-100 px-1 rounded text-slate-700">/exec</code>).
         </p>
 
         <p class="text-xs text-slate-500 leading-relaxed font-semibold">
-          💡 Opción recomendada: Realiza el despliegue del script como aplicación web y visítalo una vez para que se registre automáticamente.
+          Nota: Realiza el despliegue del script como aplicacion web y visitalo una vez para que se registre automaticamente.
         </p>
 
         <hr class="border-slate-100 my-2">
@@ -97,12 +78,7 @@
         <!-- Formulario Manual -->
         <div class="space-y-2">
           <label for="inputUrl" class="text-xs font-semibold text-slate-600">Introduce la URL manualmente si lo prefieres:</label>
-          <input 
-            type="text" 
-            id="inputUrl" 
-            placeholder="https://script.google.com/.../exec"
-            class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-slate-500 focus:bg-white transition-all"
-          >
+          <input type="text" id="inputUrl" placeholder="https://script.google.com/.../exec" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-slate-500 focus:bg-white transition-all">
         </div>
       </div>
 
@@ -110,38 +86,18 @@
       <div id="alertBox" class="hidden p-3 rounded-lg text-xs font-medium"></div>
 
       <div class="flex gap-3 justify-end">
-        <button 
-          type="button" 
-          id="btnVolverQr"
-          onclick="volverAlQr()" 
-          class="px-4 py-2 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 font-semibold rounded-lg text-xs transition-all hidden"
-        >
-          Volver al QR
-        </button>
-        <button 
-          type="button" 
-          onclick="guardarUrlManual()" 
-          id="btnGuardarManual"
-          class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-lg text-xs shadow-md flex items-center gap-1.5 transition-all"
-        >
-          <i data-lucide="save" class="w-4 h-4"></i> Guardar y generar QR
-        </button>
+        <button type="button" id="btnVolverQr" onclick="volverAlQr()" class="px-4 py-2 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 font-semibold rounded-lg text-xs transition-all hidden">Volver al QR</button>
+        <button type="button" onclick="guardarUrlManual()" id="btnGuardarManual" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-lg text-xs shadow-md flex items-center gap-1.5 transition-all"><i data-lucide="save" class="w-4 h-4"></i> Guardar y generar QR</button>
       </div>
     </div>
 
     <!-- Overlay de Pantalla Completa (oculto por defecto) -->
     <div id="overlayFullScreen" class="hidden fixed inset-0 bg-white z-50 flex flex-col items-center justify-center p-8 transition-all duration-300">
-      <button 
-        type="button" 
-        onclick="cerrarFullScreen()" 
-        class="absolute top-6 right-6 p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full transition-all focus:outline-none"
-      >
-        <i data-lucide="x" class="w-8 h-8"></i>
-      </button>
+      <button type="button" onclick="cerrarFullScreen()" class="absolute top-6 right-6 p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full transition-all focus:outline-none"><i data-lucide="x" class="w-8 h-8"></i></button>
       <div class="flex flex-col items-center gap-6 max-w-lg w-full text-center">
         <h2 class="text-2xl font-bold text-slate-800 tracking-wide uppercase">Escanear para fichar</h2>
         <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-xl">
-          <img id="qrImageFull" src="" class="w-72 h-72 sm:w-96 sm:h-96" alt="Código QR Grande">
+          <img id="qrImageFull" src="" class="w-72 h-72 sm:w-96 sm:h-96" alt="Codigo QR Grande">
         </div>
         <p class="text-sm text-slate-500 font-medium">Fichaje Seguro - Registro de asistencia</p>
       </div>
@@ -149,19 +105,13 @@
 
   </main>
 
-  <!-- Pie de página / Acciones globales -->
+  <!-- Pie de pagina / Acciones globales -->
   <footer class="bg-slate-100 px-6 py-4 border-t border-slate-200 flex justify-end">
-    <button 
-      type="button" 
-      onclick="google.script.host.close()" 
-      class="px-4 py-2 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 font-semibold rounded-lg text-sm transition-all"
-    >
-      Cerrar
-    </button>
+    <button type="button" onclick="google.script.host.close()" class="px-4 py-2 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 font-semibold rounded-lg text-sm transition-all">Cerrar</button>
   </footer>
 
   <script>
-    // Variable global de URL (obtenida asíncronamente)
+    // Variable global de URL (obtenida asincronamente)
     let WEBAPP_URL = "";
 
     window.onload = function() {
@@ -189,7 +139,7 @@
     }
 
     /**
-     * Comprueba si existe URL para renderizar el QR o si debe mostrar el formulario de configuración.
+     * Comprueba si existe URL para renderizar el QR o si debe mostrar el formulario de configuracion.
      */
     function inicializarVista() {
       if (WEBAPP_URL && WEBAPP_URL.trim() !== "" && WEBAPP_URL.indexOf("/exec") !== -1) {
@@ -206,17 +156,17 @@
         document.getElementById('qrImage').src = qrUrl;
         document.getElementById('qrImageFull').src = qrUrl;
         
-        // Habilitar botón de volver si se desea reconfigurar
+        // Habilitar boton de volver si se desea reconfigurar
         document.getElementById('btnVolverQr').classList.remove('hidden');
       } else {
-        // No hay URL válida
+        // No hay URL valida
         mostrarConfigManual();
         document.getElementById('btnVolverQr').classList.add('hidden');
       }
     }
 
     /**
-     * Muestra la vista de configuración manual
+     * Muestra la vista de configuracion manual
      */
     function mostrarConfigManual() {
       document.getElementById('vistaQr').classList.add('hidden');
@@ -226,7 +176,7 @@
     }
 
     /**
-     * Regresa a la vista del código QR si ya hay una URL configurada
+     * Regresa a la vista del codigo QR si ya hay una URL configurada
      */
     function volverAlQr() {
       if (WEBAPP_URL && WEBAPP_URL.trim() !== "") {
@@ -272,7 +222,7 @@
     }
 
     /**
-     * Envía la URL introducida manualmente al servidor
+     * Envia la URL introducida manualmente al servidor
      */
     function guardarUrlManual() {
       const input = document.getElementById('inputUrl');
@@ -280,7 +230,7 @@
       const btn = document.getElementById('btnGuardarManual');
 
       if (!urlIntroducida || urlIntroducida.indexOf("https://") !== 0) {
-        mostrarAlerta("Por favor, introduce una URL válida que empiece con https://", "error");
+        mostrarAlerta("Por favor, introduce una URL valida que empiece con https://", "error");
         return;
       }
 
