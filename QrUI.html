@@ -8,8 +8,6 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Iconos Lucide -->
   <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- Qrious para generación local de QR -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col justify-between overflow-hidden">
 
@@ -25,19 +23,35 @@
   </header>
 
   <!-- Contenido principal -->
-  <main class="flex-1 overflow-y-auto p-6 flex flex-col items-center justify-center">
+  <main class="flex-1 overflow-y-auto p-6 flex flex-col items-center justify-center relative">
 
-    <!-- Vista 1: QR Generado con éxito -->
-    <div id="vistaQr" class="w-full flex flex-col items-center gap-5">
+    <!-- Vista 1: QR Generado con éxito (Oculta por defecto hasta validar) -->
+    <div id="vistaQr" class="w-full hidden flex flex-col items-center gap-5">
       <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center gap-4">
-        <!-- Canvas para el QR -->
-        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 shadow-inner">
-          <canvas id="qrCanvas" class="w-48 h-48"></canvas>
+        <!-- Imagen del QR -->
+        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 shadow-inner relative group">
+          <img id="qrImage" src="" class="w-48 h-48" alt="Código QR de Fichaje">
         </div>
         
-        <p class="text-xs text-slate-500 max-w-[320px] text-center leading-relaxed">
-          Los estudiantes pueden escanear este código con la cámara de sus dispositivos móviles para acceder directamente a la pantalla de fichaje.
-        </p>
+        <div class="flex gap-2">
+          <!-- Botón de Pantalla Completa -->
+          <button 
+            type="button" 
+            onclick="abrirFullScreen()" 
+            class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all"
+          >
+            <i data-lucide="maximize" class="w-3.5 h-3.5"></i> Pantalla completa
+          </button>
+          
+          <!-- Botón de Configuración manual -->
+          <button 
+            type="button" 
+            onclick="mostrarConfigManual()" 
+            class="px-3 py-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all"
+          >
+            <i data-lucide="edit-3" class="w-3.5 h-3.5"></i> Editar URL
+          </button>
+        </div>
       </div>
 
       <!-- Enlace y Copiar -->
@@ -55,18 +69,9 @@
           <i data-lucide="copy" class="w-4 h-4"></i> Copiar
         </button>
       </div>
-      
-      <!-- Enlace para forzar reconfiguración manual -->
-      <button 
-        type="button" 
-        onclick="mostrarConfigManual()" 
-        class="text-xs text-slate-400 hover:text-slate-600 underline transition-colors"
-      >
-        Configurar URL manualmente
-      </button>
     </div>
 
-    <!-- Vista 2: Falta URL (Configuración Manual / Fallback) -->
+    <!-- Vista 2: Falta URL (Configuración Manual / Fallback - Oculta por defecto) -->
     <div id="vistaConfigManual" class="w-full hidden flex flex-col gap-4">
       <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-3">
         <h2 class="text-sm font-bold text-slate-700 flex items-center gap-2">
@@ -118,6 +123,24 @@
       </div>
     </div>
 
+    <!-- Overlay de Pantalla Completa (oculto por defecto) -->
+    <div id="overlayFullScreen" class="hidden fixed inset-0 bg-white z-50 flex flex-col items-center justify-center p-8 transition-all duration-300">
+      <button 
+        type="button" 
+        onclick="cerrarFullScreen()" 
+        class="absolute top-6 right-6 p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full transition-all focus:outline-none"
+      >
+        <i data-lucide="x" class="w-8 h-8"></i>
+      </button>
+      <div class="flex flex-col items-center gap-6 max-w-lg w-full text-center">
+        <h2 class="text-2xl font-bold text-slate-800 tracking-wide uppercase">Escanear para fichar</h2>
+        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-xl">
+          <img id="qrImageFull" src="" class="w-72 h-72 sm:w-96 sm:h-96" alt="Código QR Grande">
+        </div>
+        <p class="text-sm text-slate-500 font-medium">Fichaje Seguro - Registro de asistencia</p>
+      </div>
+    </div>
+
   </main>
 
   <!-- Pie de página / Acciones globales -->
@@ -153,15 +176,10 @@
         link.href = WEBAPP_URL;
         link.innerText = WEBAPP_URL;
 
-        // Generar QR en el canvas usando qrious
-        new QRious({
-          element: document.getElementById('qrCanvas'),
-          value: WEBAPP_URL,
-          size: 200,
-          background: '#ffffff',
-          foreground: '#1e293b', // slate-800
-          level: 'H' // Alta tolerancia a fallos
-        });
+        // Generar QR usando la API oficial de Google Chart (250x250 para mejor legibilidad)
+        const qrUrl = "https://chart.googleapis.com/chart?chs=250x250&cht=qr&chl=" + encodeURIComponent(WEBAPP_URL) + "&choe=UTF-8";
+        document.getElementById('qrImage').src = qrUrl;
+        document.getElementById('qrImageFull').src = qrUrl;
         
         // Habilitar botón de volver si se desea reconfigurar
         document.getElementById('btnVolverQr').classList.remove('hidden');
@@ -189,6 +207,20 @@
       if (WEBAPP_URL && WEBAPP_URL.trim() !== "") {
         inicializarVista();
       }
+    }
+
+    /**
+     * Abre la vista proyectada en pantalla completa
+     */
+    function abrirFullScreen() {
+      document.getElementById('overlayFullScreen').classList.remove('hidden');
+    }
+
+    /**
+     * Cierra la vista en pantalla completa
+     */
+    function cerrarFullScreen() {
+      document.getElementById('overlayFullScreen').classList.add('hidden');
     }
 
     /**
