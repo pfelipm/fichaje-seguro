@@ -826,7 +826,7 @@ function guardarUrlManual(url) {
 function abrirQrUI() {
   const html = HtmlService.createTemplateFromFile('QrUI');
   const urlBase = obtenerUrlAsistencia();
-  html.webAppUrl = urlBase;
+  html.webAppUrl = JSON.stringify(urlBase);
   
   const output = html.evaluate()
       .setWidth(550)

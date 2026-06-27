@@ -155,8 +155,8 @@
   </footer>
 
   <script>
-    // URL inyectada desde el backend
-    let WEBAPP_URL = "<?= webAppUrl ?>";
+    // URL inyectada desde el backend (JSON seguro)
+    let WEBAPP_URL = <?= webAppUrl ?>;
 
     window.onload = function() {
       lucide.createIcons();
