@@ -188,7 +188,17 @@
      * Abre la vista proyectada en pantalla completa
      */
     function abrirFullScreen() {
-      document.getElementById('overlayFullScreen').classList.remove('hidden');
+      const overlay = document.getElementById('overlayFullScreen');
+      overlay.classList.remove('hidden');
+      
+      // Intentar Fullscreen nativo de navegador para ocupar toda la pantalla fisica
+      if (overlay.requestFullscreen) {
+        overlay.requestFullscreen().catch(function(err) {
+          console.log("Fullscreen nativo bloqueado por sandbox, usando fallback en modal:", err);
+        });
+      } else if (overlay.webkitRequestFullscreen) { /* Safari */
+        overlay.webkitRequestFullscreen();
+      }
     }
 
     /**
@@ -196,6 +206,15 @@
      */
     function cerrarFullScreen() {
       document.getElementById('overlayFullScreen').classList.add('hidden');
+      
+      // Salir de Fullscreen nativo si esta activo
+      if (document.fullscreenElement) {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        }
+      }
     }
 
     /**
