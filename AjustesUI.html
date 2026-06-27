@@ -330,8 +330,8 @@
   </div>
 
   <script>
-    // Ajustes inyectados desde Apps Script
-    const AJUSTES = JSON.parse('<?= ajustes ?>');
+    // Ajustes inyectados desde Apps Script (salida sin escapar segura)
+    const AJUSTES = <?!= ajustes ?>;
 
     window.onload = function() {
       lucide.createIcons();
