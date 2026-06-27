@@ -35,6 +35,7 @@ Un sistema moderno de control de asistencia y registro de presencia desarrollado
 - 🔍 **Buscadores avanzados**: Filtros rápidos por ID de usuario y por dispositivo (Hash/Navegador), además de filtros por estados (con alertas de fraude o sin coordenadas GPS).
 - 📅 **Control de rango temporal flexible**: Filtrado rápido de registros en tiempo real: Hoy, esta semana, este mes, este trimestre, o rango personalizado entre fechas.
 - ⚙️ **Parámetros configurables**: Panel visual integrado para ajustar dinámicamente las medidas de seguridad del backend (tiempo de contención, umbrales de tiempo, obligatoriedad de GPS y selfie) sin necesidad de tocar una línea de código.
+- 📱 **Acceso rápido por código QR**: Generador de códigos QR integrado para proyectar el acceso al formulario a pantalla completa en el aula física, facilitando el escaneo simultáneo y masivo de los estudiantes.
 
 ---
 
@@ -66,6 +67,16 @@ Para garantizar la veracidad de cada registro, el sistema implementa múltiples 
 
 ---
 
+## Captura automática de URL y distribución por código QR
+
+Para simplificar la puesta en marcha sin requerir que el docente configure manualmente enlaces técnicos, el sistema cuenta con un flujo de autoconfiguración:
+
+- **Autodetección en la primera visita**: Al realizar el despliegue del script como aplicación web, la primera vez que se visita la URL de producción (el enlace que termina en `/exec`), el backend intercepta dinámicamente la URL real del servicio y la almacena de manera segura en las propiedades del script (`ScriptProperties`) bajo la clave `WEBAPP_URL`.
+- **Generación de QR y proyección**: Desde el menú de la hoja de cálculo, el docente puede abrir el comando QR. El sistema lee la URL almacenada y genera un código QR utilizando una API pública compatible.
+- **Modo Proyector (Pantalla completa)**: Incorpora un modo de pantalla completa nativo (`requestFullscreen`) que maximiza el QR ocupando el 70% del alto del monitor físico del aula para que pueda ser escaneado cómodamente desde los asientos. Si no se ha capturado la URL automáticamente, el docente dispone de un formulario de fallback para pegarla manualmente.
+
+---
+
 ## Menú de la aplicación
 
 El script extiende la interfaz de Google Sheets agregando un menú personalizado llamado `🔒 Fichaje Seguro` estructurado en secciones independientes:
@@ -74,6 +85,7 @@ El script extiende la interfaz de Google Sheets agregando un menú personalizado
   - `⚙️ Inicializar sistema`: Analiza metadatos del proyecto y crea las hojas iniciales. Si el sistema ya estaba configurado, lanza un diálogo de advertencia para evitar sobrescrituras accidentales.
 - **Sección 2: operaciones y configuración**
   - `🔧 Configurar parámetros`: Abre la ventana de configuración para administrar niveles de seguridad e interfaces.
+  - `📱 Mostrar código QR`: Genera el código QR de acceso a la webapp, permite copiar el enlace directo y proyectarlo a pantalla completa.
   - `🚀 Guía de despliegue`: Guía paso a paso sobre cómo publicar el formulario como aplicación web pública en Google Apps Script.
 - **Sección 3: panel analítico**
   - `📊 Panel de control`: Dashboard analítico interactivo de gran tamaño con gráficos de rendimiento y tablas de auditoría.
@@ -106,6 +118,7 @@ El script extiende la interfaz de Google Sheets agregando un menú personalizado
    - `NotificacionUI.html` (Diálogos de alerta estilizados)
    - `AcercaDe.html` (Información del proyecto)
    - `DespliegueUI.html` (Guía de publicación)
+   - `QrUI.html` (Interfaz de generación y proyección del código QR)
 
 ### Paso 2: inicialización del sistema
 1. Recarga tu hoja de cálculo.
@@ -135,6 +148,7 @@ El script extiende la interfaz de Google Sheets agregando un menú personalizado
 ├── ConfirmMockDataUI.html      # Ventana de advertencia al generar registros de prueba
 ├── AcercaDe.html               # Diálogo Acerca de...
 ├── DespliegueUI.html           # Guía visual de despliegue paso a paso
+├── QrUI.html                   # Interfaz de visualización y proyección del código QR
 ├── assets/                     # Directorio de recursos gráficos
 │   └── fichaje_seguro_banner.png # Banner del proyecto
 └── appsscript.json             # Manifiesto de configuración de Apps Script
