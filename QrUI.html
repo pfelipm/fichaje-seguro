@@ -1,13 +1,273 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
   <base target="_top">
+  <meta charset="UTF-8">
+  <title>Codigo QR de Fichaje</title>
+  <!-- Tailwind CSS para diseño moderno -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Iconos Lucide -->
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body class="bg-slate-50 p-6 font-sans">
-  <h1 class="text-lg font-bold text-slate-800">Prueba de carga QR</h1>
-  <p class="text-xs text-slate-500">Si ves este texto sin errores en la consola, el archivo base carga correctamente.</p>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col justify-between overflow-hidden">
+
+  <!-- Cabecera -->
+  <header class="bg-gradient-to-r from-slate-700 to-slate-600 text-white px-6 py-4 shadow-md flex items-center gap-3">
+    <div class="p-2 bg-white/10 rounded-lg">
+      <i data-lucide="qr-code" class="w-6 h-6 text-slate-200"></i>
+    </div>
+    <div>
+      <h1 class="text-lg font-bold">Acceso por codigo QR</h1>
+      <p class="text-xs text-slate-300">Genera el codigo para el registro de asistencia en el aula</p>
+    </div>
+  </header>
+
+  <!-- Contenido principal -->
+  <main class="flex-1 overflow-y-auto p-6 flex flex-col items-center justify-center relative">
+
+    <!-- Vista 0: Cargando (Visible al iniciar) -->
+    <div id="vistaLoading" class="w-full flex flex-col items-center justify-center gap-3 py-10">
+      <div class="animate-spin rounded-full h-10 w-10 border-4 border-slate-600 border-t-transparent"></div>
+      <p class="text-xs text-slate-500 font-medium">Obteniendo enlace de fichaje...</p>
+    </div>
+
+    <!-- Vista 1: QR Generado con exito (Oculta por defecto hasta validar) -->
+    <div id="vistaQr" class="w-full hidden flex flex-col items-center gap-5">
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center gap-4">
+        <!-- Imagen del QR -->
+        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 shadow-inner relative group">
+          <img id="qrImage" src="" class="w-48 h-48" alt="Codigo QR de Fichaje">
+        </div>
+        
+        <div class="flex gap-2">
+          <!-- Boton de Pantalla Completa -->
+          <button type="button" onclick="abrirFullScreen()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all"><i data-lucide="maximize" class="w-3.5 h-3.5"></i> Pantalla completa</button>
+          
+          <!-- Boton de Configuracion manual -->
+          <button type="button" onclick="mostrarConfigManual()" class="px-3 py-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i> Editar URL</button>
+        </div>
+      </div>
+
+      <!-- Enlace y Copiar -->
+      <div class="w-full bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between gap-3">
+        <div class="flex-1 min-w-0">
+          <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Enlace del formulario</p>
+          <a id="linkWebApp" href="#" target="_blank" class="text-sm font-medium text-slate-600 hover:text-slate-800 underline truncate block mt-0.5"></a>
+        </div>
+        <button type="button" onclick="copiarUrl()" id="btnCopiar" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-semibold flex items-center gap-1.5 transition-all shrink-0"><i data-lucide="copy" class="w-4 h-4"></i> Copiar</button>
+      </div>
+    </div>
+
+    <!-- Vista 2: Falta URL (Configuracion Manual / Fallback - Oculta por defecto) -->
+    <div id="vistaConfigManual" class="w-full hidden flex flex-col gap-4">
+      <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-3">
+        <h2 class="text-sm font-bold text-slate-700 flex items-center gap-2">
+          <i data-lucide="info" class="w-4 h-4 text-amber-500"></i> Configuracion de URL
+        </h2>
+        
+        <p class="text-xs text-slate-500 leading-relaxed">
+          Para que el codigo QR funcione correctamente, es necesario guardar la URL del despliegue en produccion (<code class="bg-slate-100 px-1 rounded text-slate-700">/exec</code>).
+        </p>
+
+        <p class="text-xs text-slate-500 leading-relaxed font-semibold">
+          Nota: Realiza el despliegue del script como aplicacion web y visitalo una vez para que se registre automaticamente.
+        </p>
+
+        <hr class="border-slate-100 my-2">
+
+        <!-- Formulario Manual -->
+        <div class="space-y-2">
+          <label for="inputUrl" class="text-xs font-semibold text-slate-600">Introduce la URL manualmente si lo prefieres:</label>
+          <input type="text" id="inputUrl" placeholder="https://script.google.com/.../exec" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-slate-500 focus:bg-white transition-all">
+        </div>
+      </div>
+
+      <!-- Alerta inline para mensajes de error o info -->
+      <div id="alertBox" class="hidden p-3 rounded-lg text-xs font-medium"></div>
+
+      <div class="flex gap-3 justify-end">
+        <button type="button" id="btnVolverQr" onclick="volverAlQr()" class="px-4 py-2 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 font-semibold rounded-lg text-xs transition-all hidden">Volver al QR</button>
+        <button type="button" onclick="guardarUrlManual()" id="btnGuardarManual" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-lg text-xs shadow-md flex items-center gap-1.5 transition-all"><i data-lucide="save" class="w-4 h-4"></i> Guardar y generar QR</button>
+      </div>
+    </div>
+
+    <!-- Overlay de Pantalla Completa (oculto por defecto) -->
+    <div id="overlayFullScreen" class="hidden fixed inset-0 bg-white z-50 flex flex-col items-center justify-center p-8 transition-all duration-300">
+      <button type="button" onclick="cerrarFullScreen()" class="absolute top-6 right-6 p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full transition-all focus:outline-none"><i data-lucide="x" class="w-8 h-8"></i></button>
+      <div class="flex flex-col items-center gap-6 max-w-lg w-full text-center">
+        <h2 class="text-2xl font-bold text-slate-800 tracking-wide uppercase">Escanear para fichar</h2>
+        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-xl">
+          <img id="qrImageFull" src="" class="w-72 h-72 sm:w-96 sm:h-96" alt="Codigo QR Grande">
+        </div>
+        <p class="text-sm text-slate-500 font-medium">Fichaje Seguro - Registro de asistencia</p>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Pie de pagina / Acciones globales -->
+  <footer class="bg-slate-100 px-6 py-4 border-t border-slate-200 flex justify-end">
+    <button type="button" onclick="google.script.host.close()" class="px-4 py-2 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 font-semibold rounded-lg text-sm transition-all">Cerrar</button>
+  </footer>
+
   <script>
-    console.log("=== DIAGNOSTICO: QrUI cargado con exito ===");
+    // Variable global de URL (obtenida asincronamente)
+    let WEBAPP_URL = "";
+
+    window.onload = function() {
+      lucide.createIcons();
+      cargarUrlServidor();
+    };
+
+    /**
+     * Llama al servidor para leer la URL registrada
+     */
+    function cargarUrlServidor() {
+      google.script.run
+        .withSuccessHandler(function(url) {
+          WEBAPP_URL = url;
+          document.getElementById('vistaLoading').classList.add('hidden');
+          inicializarVista();
+        })
+        .withFailureHandler(function(err) {
+          console.error("Error al obtener la URL del servidor:", err);
+          WEBAPP_URL = "";
+          document.getElementById('vistaLoading').classList.add('hidden');
+          inicializarVista();
+        })
+        .obtenerUrlAsistencia();
+    }
+
+    /**
+     * Comprueba si existe URL para renderizar el QR o si debe mostrar el formulario de configuracion.
+     */
+    function inicializarVista() {
+      if (WEBAPP_URL && WEBAPP_URL.trim() !== "" && WEBAPP_URL.indexOf("/exec") !== -1) {
+        document.getElementById('vistaQr').classList.remove('hidden');
+        document.getElementById('vistaConfigManual').classList.add('hidden');
+        
+        // Configurar enlace clickable
+        const link = document.getElementById('linkWebApp');
+        link.href = WEBAPP_URL;
+        link.innerText = WEBAPP_URL;
+
+        // Generar QR usando la API oficial de Google Chart (250x250 para mejor legibilidad)
+        const qrUrl = "https://chart.googleapis.com/chart?chs=250x250&cht=qr&chl=" + encodeURIComponent(WEBAPP_URL) + "&choe=UTF-8";
+        document.getElementById('qrImage').src = qrUrl;
+        document.getElementById('qrImageFull').src = qrUrl;
+        
+        // Habilitar boton de volver si se desea reconfigurar
+        document.getElementById('btnVolverQr').classList.remove('hidden');
+      } else {
+        // No hay URL valida
+        mostrarConfigManual();
+        document.getElementById('btnVolverQr').classList.add('hidden');
+      }
+    }
+
+    /**
+     * Muestra la vista de configuracion manual
+     */
+    function mostrarConfigManual() {
+      document.getElementById('vistaQr').classList.add('hidden');
+      document.getElementById('vistaConfigManual').classList.remove('hidden');
+      document.getElementById('inputUrl').value = WEBAPP_URL;
+      ocultarAlerta();
+    }
+
+    /**
+     * Regresa a la vista del codigo QR si ya hay una URL configurada
+     */
+    function volverAlQr() {
+      if (WEBAPP_URL && WEBAPP_URL.trim() !== "") {
+        inicializarVista();
+      }
+    }
+
+    /**
+     * Abre la vista proyectada en pantalla completa
+     */
+    function abrirFullScreen() {
+      document.getElementById('overlayFullScreen').classList.remove('hidden');
+    }
+
+    /**
+     * Cierra la vista en pantalla completa
+     */
+    function cerrarFullScreen() {
+      document.getElementById('overlayFullScreen').classList.add('hidden');
+    }
+
+    /**
+     * Copia la URL de asistencia al portapapeles del dispositivo
+     */
+    function copiarUrl() {
+      const btn = document.getElementById('btnCopiar');
+      
+      navigator.clipboard.writeText(WEBAPP_URL).then(function() {
+        btn.innerHTML = '<i data-lucide="check" class="w-4 h-4 text-emerald-600"></i> Copiado';
+        btn.classList.add('bg-emerald-50', 'text-emerald-700', 'hover:bg-emerald-100');
+        lucide.createIcons();
+
+        // Restaurar estado original tras 2 segundos
+        setTimeout(function() {
+          btn.innerHTML = '<i data-lucide="copy" class="w-4 h-4"></i> Copiar';
+          btn.classList.remove('bg-emerald-50', 'text-emerald-700', 'hover:bg-emerald-100');
+          btn.classList.add('bg-slate-100', 'text-slate-700', 'hover:bg-slate-200');
+          lucide.createIcons();
+        }, 2000);
+      }).catch(function(err) {
+        console.error('Error al copiar al portapapeles: ', err);
+      });
+    }
+
+    /**
+     * Envia la URL introducida manualmente al servidor
+     */
+    function guardarUrlManual() {
+      const input = document.getElementById('inputUrl');
+      const urlIntroducida = input.value.trim();
+      const btn = document.getElementById('btnGuardarManual');
+
+      if (!urlIntroducida || urlIntroducida.indexOf("https://") !== 0) {
+        mostrarAlerta("Por favor, introduce una URL valida que empiece con https://", "error");
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent inline-block mr-1"></span> Guardando...';
+      ocultarAlerta();
+
+      google.script.run
+        .withSuccessHandler(function(mensaje) {
+          WEBAPP_URL = urlIntroducida;
+          btn.disabled = false;
+          btn.innerHTML = '<i data-lucide="save" class="w-4 h-4"></i> Guardar y generar QR';
+          inicializarVista();
+        })
+        .withFailureHandler(function(err) {
+          btn.disabled = false;
+          btn.innerHTML = '<i data-lucide="save" class="w-4 h-4"></i> Guardar y generar QR';
+          mostrarAlerta("Error del servidor: " + err.message, "error");
+        })
+        .guardarUrlManual(urlIntroducida);
+    }
+
+    function mostrarAlerta(msg, tipo) {
+      const box = document.getElementById('alertBox');
+      box.innerText = msg;
+      box.classList.remove('hidden', 'bg-red-50', 'text-red-700', 'bg-emerald-50', 'text-emerald-700');
+      
+      if (tipo === "error") {
+        box.classList.add('bg-red-50', 'text-red-700');
+      } else {
+        box.classList.add('bg-emerald-50', 'text-emerald-700');
+      }
+    }
+
+    function ocultarAlerta() {
+      document.getElementById('alertBox').classList.add('hidden');
+    }
   </script>
 </body>
 </html>

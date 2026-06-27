@@ -454,7 +454,7 @@
       };
 
       btn.disabled = true;
-      btn.innerHTML = `<span class="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent inline-block mr-1"></span> Guardando...`;
+      btn.innerHTML = '<span class="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent inline-block mr-1"></span> Guardando...';
 
       google.script.run
         .withSuccessHandler(function(respuesta) {
@@ -466,7 +466,7 @@
         .withFailureHandler(function(err) {
           alert("Fallo al guardar ajustes: " + err.message);
           btn.disabled = false;
-          btn.innerHTML = `<i data-lucide="save" class="w-4 h-4"></i> Guardar ajustes`;
+          btn.innerHTML = '<i data-lucide="save" class="w-4 h-4"></i> Guardar ajustes';
         })
         .guardarAjustes(payload);
     }
