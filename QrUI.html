@@ -97,7 +97,7 @@
       <div class="flex flex-col items-center gap-6 max-w-lg w-full text-center">
         <h2 class="text-2xl font-bold text-slate-800 tracking-wide uppercase">Escanear para fichar</h2>
         <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-xl">
-          <img id="qrImageFull" src="" class="w-72 h-72 sm:w-96 sm:h-96" alt="Codigo QR Grande">
+          <img id="qrImageFull" src="" class="w-[70vh] h-[70vh] max-w-[85vw] max-h-[70vh] object-contain" alt="Codigo QR Grande">
         </div>
         <p class="text-sm text-slate-500 font-medium">Fichaje Seguro - Registro de asistencia</p>
       </div>
@@ -117,7 +117,20 @@
     window.onload = function() {
       lucide.createIcons();
       cargarUrlServidor();
+      
+      // Escuchar el evento de cambio de pantalla completa (para detectar la tecla ESC)
+      document.addEventListener("fullscreenchange", gestionarSalidaFullScreen);
+      document.addEventListener("webkitfullscreenchange", gestionarSalidaFullScreen);
     };
+
+    /**
+     * Sincroniza la ocultacion del overlay cuando se sale del Fullscreen nativo por cualquier via (ej. ESC)
+     */
+    function gestionarSalidaFullScreen() {
+      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        document.getElementById('overlayFullScreen').classList.add('hidden');
+      }
+    }
 
     /**
      * Llama al servidor para leer la URL registrada
