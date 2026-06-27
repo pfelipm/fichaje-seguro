@@ -826,7 +826,7 @@ function guardarUrlManual(url) {
 function abrirQrUI() {
   const html = HtmlService.createHtmlOutputFromFile('QrUI')
       .setWidth(550)
-      .setHeight(580)
+      .setHeight(680)
       .setTitle('Código QR de Fichaje');
   SpreadsheetApp.getUi().showModalDialog(html, 'Código QR de Fichaje');
 }
