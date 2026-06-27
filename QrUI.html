@@ -151,8 +151,8 @@
         link.href = WEBAPP_URL;
         link.innerText = WEBAPP_URL;
 
-        // Generar QR usando la API oficial de Google Chart (250x250 para mejor legibilidad)
-        const qrUrl = "https://chart.googleapis.com/chart?chs=250x250&cht=qr&chl=" + encodeURIComponent(WEBAPP_URL) + "&choe=UTF-8";
+        // Generar QR usando la API publica de QRServer (250x250 para mejor legibilidad)
+        const qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=" + encodeURIComponent(WEBAPP_URL);
         document.getElementById('qrImage').src = qrUrl;
         document.getElementById('qrImageFull').src = qrUrl;
         
