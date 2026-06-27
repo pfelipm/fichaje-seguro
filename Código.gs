@@ -14,7 +14,7 @@ const TAB_AJUSTES = "Ajustes";
  * Sirve la interfaz web HTML al usuario
  * Inyecta dinámicamente la configuración actual desde el Sheet usando plantilla.
  */
-function doGet() {
+function doGet(e) {
   // Aseguramos que la hoja esté lista antes de que cargue el frontend de forma silenciosa
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   if (!ss.getSheetByName(TAB_ASISTENCIA) || !ss.getSheetByName(TAB_AJUSTES)) {
@@ -26,6 +26,9 @@ function doGet() {
   // Obtenemos ajustes y los convertimos a JSON para el Frontend
   const ajustes = obtenerAjustes();
   template.ajustes = JSON.stringify(ajustes);
+  
+  // Registramos automáticamente la URL de producción si se visita en producción
+  registrarYObtenerUrl();
   
   return template.evaluate()
       .setTitle('Registro de Asistencia Universitario')
@@ -466,6 +469,7 @@ function onOpen() {
       .addItem('⚙️ Inicializar sistema', 'inicializarSistemaDesdeMenu')
       .addSeparator()
       .addItem('🔧 Configurar parámetros', 'abrirAjustesUI')
+      .addItem('📱 Mostrar código QR', 'abrirQrUI')
       .addItem('🚀 Guía de despliegue', 'abrirDespliegueUI')
       .addSeparator()
       .addItem('📊 Panel de control', 'abrirDashboardUI')
@@ -765,4 +769,68 @@ function mostrarNotificacion(titulo, mensaje, tipo = "exito") {
       .setHeight(320)
       .setTitle(titulo);
   SpreadsheetApp.getUi().showModalDialog(html, titulo);
+}
+
+/**
+ * Inicializa y registra de forma automática la URL de producción del script.
+ * Se ejecuta de manera transparente dentro de doGet(e).
+ *
+ * @return {string} La URL activa del servicio (/exec o /dev).
+ */
+function registrarYObtenerUrl() {
+  const propiedades = PropertiesService.getScriptProperties();
+  let urlRegistrada = propiedades.getProperty("WEBAPP_URL");
+
+  // Obtenemos la URL del contexto de ejecución actual
+  const urlActual = ScriptApp.getService().getUrl();
+
+  // Si la URL actual es de producción (/exec) y es distinta a la guardada (o no existe)
+  if (urlActual && urlActual.indexOf("/exec") !== -1 && urlActual !== urlRegistrada) {
+    propiedades.setProperty("WEBAPP_URL", urlActual);
+    urlRegistrada = urlActual;
+    console.log("Se ha registrado automáticamente la nueva URL de producción: " + urlActual);
+  }
+
+  return urlRegistrada || urlActual;
+}
+
+/**
+ * Devuelve la URL registrada en las propiedades del script.
+ */
+function obtenerUrlAsistencia() {
+  const propiedades = PropertiesService.getScriptProperties();
+  const urlRegistrada = propiedades.getProperty("WEBAPP_URL");
+  return urlRegistrada || "";
+}
+
+/**
+ * Guarda manualmente la URL proporcionada por el administrador en las propiedades del script.
+ */
+function guardarUrlManual(url) {
+  try {
+    const urlLimpia = url.trim();
+    if (!urlLimpia || urlLimpia.indexOf("https://") !== 0) {
+      throw new Error("URL inválida. Debe comenzar con https://");
+    }
+    const propiedades = PropertiesService.getScriptProperties();
+    propiedades.setProperty("WEBAPP_URL", urlLimpia);
+    return "URL guardada con éxito.";
+  } catch (e) {
+    throw new Error("Error al guardar la URL: " + e.message);
+  }
+}
+
+/**
+ * Abre el diálogo con el código QR para fichaje.
+ */
+function abrirQrUI() {
+  const html = HtmlService.createTemplateFromFile('QrUI');
+  const urlBase = obtenerUrlAsistencia();
+  html.webAppUrl = urlBase;
+  
+  const output = html.evaluate()
+      .setWidth(550)
+      .setHeight(580)
+      .setTitle('Código QR de Fichaje');
+  SpreadsheetApp.getUi().showModalDialog(output, 'Código QR de Fichaje');
 }
