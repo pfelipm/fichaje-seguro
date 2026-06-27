@@ -81,17 +81,17 @@ Para simplificar la puesta en marcha sin requerir que el docente configure manua
 
 El script extiende la interfaz de Google Sheets agregando un menú personalizado llamado `🔒 Fichaje Seguro` estructurado en secciones independientes:
 
-- **Sección 1: inicialización**
+- **Sección 1: Inicialización**
   - `⚙️ Inicializar sistema`: Analiza metadatos del proyecto y crea las hojas iniciales. Si el sistema ya estaba configurado, lanza un diálogo de advertencia para evitar sobrescrituras accidentales.
-- **Sección 2: operaciones y configuración**
+- **Sección 2: Configuración y despliegue**
   - `🔧 Configurar parámetros`: Abre la ventana de configuración para administrar niveles de seguridad e interfaces.
-  - `📱 Mostrar código QR`: Genera el código QR de acceso a la webapp, permite copiar el enlace directo y proyectarlo a pantalla completa.
   - `🚀 Guía de despliegue`: Guía paso a paso sobre cómo publicar el formulario como aplicación web pública en Google Apps Script.
-- **Sección 3: panel analítico**
+- **Sección 3: Acceso y control docente**
+  - `📱 Mostrar código QR`: Genera el código QR de acceso a la webapp, permite copiar el enlace directo y proyectarlo a pantalla completa en el aula.
   - `📊 Panel de control`: Dashboard analítico interactivo de gran tamaño con gráficos de rendimiento y tablas de auditoría.
-- **Sección 4: herramientas de desarrollo**
+- **Sección 4: Herramientas de desarrollo**
   - `🧪 Generar datos de prueba`: Genera de manera limpia 50 registros cronológicamente espaciados a lo largo de 15 días (incluyendo escenarios normales y simulaciones de fraude por colisión de huellas) para validar el comportamiento del panel.
-- **Sección 5: información**
+- **Sección 5: Información**
   - `ℹ️ Acerca de...`: Información general del proyecto y autoría.
 
 ---
