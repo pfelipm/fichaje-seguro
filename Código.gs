@@ -61,8 +61,8 @@ function inicializarSistemaDesdeMenu() {
     const html = HtmlService.createHtmlOutputFromFile('ConfirmarInicializacionUI')
         .setWidth(500)
         .setHeight(470)
-        .setTitle('Confirmar inicialización - Fichaje seguro');
-    SpreadsheetApp.getUi().showModalDialog(html, 'Confirmar inicialización - Fichaje seguro');
+        .setTitle('Confirmar inicialización | Fichaje seguro');
+    SpreadsheetApp.getUi().showModalDialog(html, 'Confirmar inicialización | Fichaje seguro');
   } else {
     ejecutarInicializacionLimpia();
     mostrarNotificacion("Sistema inicializado", "El sistema Fichaje Seguro ha sido inicializado con éxito por primera vez.", "exito");
@@ -491,8 +491,8 @@ function abrirAjustesUI() {
   const output = html.evaluate()
       .setWidth(600)
       .setHeight(700)
-      .setTitle('Configuración de parámetros - Fichaje seguro');
-  SpreadsheetApp.getUi().showModalDialog(output, 'Configuración de parámetros - Fichaje seguro');
+      .setTitle('Configuración de parámetros | Fichaje seguro');
+  SpreadsheetApp.getUi().showModalDialog(output, 'Configuración de parámetros | Fichaje seguro');
 }
 
 /**
@@ -552,8 +552,8 @@ function abrirAcercaDe() {
   const html = HtmlService.createHtmlOutputFromFile('AcercaDe')
       .setWidth(450)
       .setHeight(520)
-      .setTitle('Acerca de - Fichaje seguro');
-  SpreadsheetApp.getUi().showModalDialog(html, 'Acerca de - Fichaje seguro');
+      .setTitle('Acerca de | Fichaje seguro');
+  SpreadsheetApp.getUi().showModalDialog(html, 'Acerca de | Fichaje seguro');
 }
 
 /**
@@ -563,8 +563,8 @@ function abrirDespliegueUI() {
   const html = HtmlService.createHtmlOutputFromFile('DespliegueUI')
       .setWidth(500)
       .setHeight(550)
-      .setTitle('Guía de despliegue - Fichaje seguro');
-  SpreadsheetApp.getUi().showModalDialog(html, 'Guía de despliegue - Fichaje seguro');
+      .setTitle('Guía de despliegue | Fichaje seguro');
+  SpreadsheetApp.getUi().showModalDialog(html, 'Guía de despliegue | Fichaje seguro');
 }
 
 /**
@@ -574,8 +574,8 @@ function abrirDashboardUI() {
   const html = HtmlService.createHtmlOutputFromFile('DashboardUI')
       .setWidth(1150)
       .setHeight(950)
-      .setTitle('Panel de control - Fichaje seguro');
-  SpreadsheetApp.getUi().showModalDialog(html, 'Panel de control - Fichaje seguro');
+      .setTitle('Panel de control | Fichaje seguro');
+  SpreadsheetApp.getUi().showModalDialog(html, 'Panel de control | Fichaje seguro');
 }
 
 /**
@@ -631,8 +631,8 @@ function generarDatosDePrueba() {
     const html = HtmlService.createHtmlOutputFromFile('ConfirmMockDataUI')
         .setWidth(500)
         .setHeight(380)
-        .setTitle('Confirmar datos de prueba - Fichaje seguro');
-    SpreadsheetApp.getUi().showModalDialog(html, 'Confirmar datos de prueba - Fichaje seguro');
+        .setTitle('Confirmar datos de prueba | Fichaje seguro');
+    SpreadsheetApp.getUi().showModalDialog(html, 'Confirmar datos de prueba | Fichaje seguro');
   } else {
     const respuesta = ejecutarGeneracionDatosDePrueba();
     mostrarNotificacion("Datos de prueba", respuesta, "exito");
@@ -764,7 +764,7 @@ function mostrarNotificacion(titulo, mensaje, tipo = "exito") {
   template.mensaje = mensaje;
   template.tipo = tipo;
   
-  const tituloCompleto = titulo.indexOf(" - Fichaje seguro") === -1 ? titulo + " - Fichaje seguro" : titulo;
+  const tituloCompleto = titulo.indexOf(" | Fichaje seguro") === -1 ? titulo + " | Fichaje seguro" : titulo;
   
   const html = template.evaluate()
       .setWidth(450)
@@ -829,6 +829,6 @@ function abrirQrUI() {
   const html = HtmlService.createHtmlOutputFromFile('QrUI')
       .setWidth(550)
       .setHeight(680)
-      .setTitle('Código QR de acceso - Fichaje seguro');
-  SpreadsheetApp.getUi().showModalDialog(html, 'Código QR de acceso - Fichaje seguro');
+      .setTitle('Código QR de acceso | Fichaje seguro');
+  SpreadsheetApp.getUi().showModalDialog(html, 'Código QR de acceso | Fichaje seguro');
 }
