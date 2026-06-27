@@ -58,35 +58,37 @@
             <i id="flechaGeolocalizacion" data-lucide="chevron-up" class="w-4 h-4 text-slate-400 transition-transform duration-200"></i>
           </button>
           <!-- Contenido (Abierto por defecto) -->
-          <div id="seccionGeolocalizacion" class="px-5 pb-5 pt-2 border-t border-slate-100 space-y-4">
-            <!-- MEDIDA_GPS -->
-            <div class="flex items-start justify-between gap-4 py-2 border-b border-slate-100">
-              <div class="flex-1">
-                <label for="MEDIDA_GPS" class="text-sm font-semibold text-slate-700">Geolocalización obligatoria</label>
-                <p class="text-xs text-slate-500 mt-0.5">Exige que el usuario comparta su GPS para permitir el registro.</p>
+          <div id="seccionGeolocalizacion" class="transition-all duration-300 ease-in-out max-h-[600px] opacity-100 overflow-hidden border-t border-slate-100">
+            <div class="px-5 pb-5 pt-4 space-y-4">
+              <!-- MEDIDA_GPS -->
+              <div class="flex items-start justify-between gap-4 py-2 border-b border-slate-100">
+                <div class="flex-1">
+                  <label for="MEDIDA_GPS" class="text-sm font-semibold text-slate-700">Geolocalización obligatoria</label>
+                  <p class="text-xs text-slate-500 mt-0.5">Exige que el usuario comparta su GPS para permitir el registro.</p>
+                </div>
+                <input type="checkbox" id="MEDIDA_GPS" class="w-5 h-5 accent-slate-600 cursor-pointer rounded mt-1">
               </div>
-              <input type="checkbox" id="MEDIDA_GPS" class="w-5 h-5 accent-slate-600 cursor-pointer rounded mt-1">
-            </div>
 
-            <!-- MEDIDA_SELFIE -->
-            <div class="flex items-start justify-between gap-4 py-2 border-b border-slate-100">
-              <div class="flex-1">
-                <label for="MEDIDA_SELFIE" class="text-sm font-semibold text-slate-700">Selfie obligatorio</label>
-                <p class="text-xs text-slate-500 mt-0.5">Requiere capturar una foto facial de validación visual.</p>
+              <!-- MEDIDA_SELFIE -->
+              <div class="flex items-start justify-between gap-4 py-2 border-b border-slate-100">
+                <div class="flex-1">
+                  <label for="MEDIDA_SELFIE" class="text-sm font-semibold text-slate-700">Selfie obligatorio</label>
+                  <p class="text-xs text-slate-500 mt-0.5">Requiere capturar una foto facial de validación visual.</p>
+                </div>
+                <input type="checkbox" id="MEDIDA_SELFIE" class="w-5 h-5 accent-slate-600 cursor-pointer rounded mt-1">
               </div>
-              <input type="checkbox" id="MEDIDA_SELFIE" class="w-5 h-5 accent-slate-600 cursor-pointer rounded mt-1">
-            </div>
 
-            <!-- CARPETA_DRIVE_ID -->
-            <div class="space-y-1.5 pt-2">
-              <label for="CARPETA_DRIVE_ID" class="text-sm font-semibold text-slate-700">ID de carpeta en Google Drive</label>
-              <input 
-                type="text" 
-                id="CARPETA_DRIVE_ID" 
-                placeholder="Vacío = misma carpeta que la hoja de cálculo"
-                class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:bg-white transition-all"
-              >
-              <p class="text-[11px] text-slate-400">Identificador de la carpeta de Drive donde se guardarán las fotos.</p>
+              <!-- CARPETA_DRIVE_ID -->
+              <div class="space-y-1.5 pt-2">
+                <label for="CARPETA_DRIVE_ID" class="text-sm font-semibold text-slate-700">ID de carpeta en Google Drive</label>
+                <input 
+                  type="text" 
+                  id="CARPETA_DRIVE_ID" 
+                  placeholder="Vacío = misma carpeta que la hoja de cálculo"
+                  class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:bg-white transition-all"
+                >
+                <p class="text-[11px] text-slate-400">Identificador de la carpeta de Drive donde se guardarán las fotos.</p>
+              </div>
             </div>
           </div>
         </section>
@@ -105,26 +107,28 @@
             <i id="flechaContencion" data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transition-transform duration-200"></i>
           </button>
           <!-- Contenido (Cerrado por defecto) -->
-          <div id="seccionContencion" class="hidden px-5 pb-5 pt-2 border-t border-slate-100 space-y-4">
-            <!-- MEDIDA_BLOQUEO -->
-            <div class="flex items-start justify-between gap-4 py-2 border-b border-slate-100">
-              <div class="flex-1">
-                <label for="MEDIDA_BLOQUEO" class="text-sm font-semibold text-slate-700">Bloqueo por dispositivo</label>
-                <p class="text-xs text-slate-500 mt-0.5">Impide que un mismo identificador o dispositivo intente registrarse repetidamente en un intervalo.</p>
+          <div id="seccionContencion" class="transition-all duration-300 ease-in-out max-h-0 opacity-0 overflow-hidden border-t border-slate-100">
+            <div class="px-5 pb-5 pt-4 space-y-4">
+              <!-- MEDIDA_BLOQUEO -->
+              <div class="flex items-start justify-between gap-4 py-2 border-b border-slate-100">
+                <div class="flex-1">
+                  <label for="MEDIDA_BLOQUEO" class="text-sm font-semibold text-slate-700">Bloqueo por dispositivo</label>
+                  <p class="text-xs text-slate-500 mt-0.5">Impide que un mismo identificador o dispositivo intente registrarse repetidamente en un intervalo.</p>
+                </div>
+                <input type="checkbox" id="MEDIDA_BLOQUEO" class="w-5 h-5 accent-slate-600 cursor-pointer rounded mt-1" onchange="toggleContencionInput()">
               </div>
-              <input type="checkbox" id="MEDIDA_BLOQUEO" class="w-5 h-5 accent-slate-600 cursor-pointer rounded mt-1" onchange="toggleContencionInput()">
-            </div>
 
-            <!-- TIEMPO_CONTENCION_MIN -->
-            <div id="wrapperContencion" class="space-y-1.5 pt-2">
-              <label for="TIEMPO_CONTENCION_MIN" class="text-sm font-semibold text-slate-700">Tiempo de contención (minutos)</label>
-              <input 
-                type="number" 
-                id="TIEMPO_CONTENCION_MIN" 
-                min="1"
-                class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:bg-white transition-all"
-              >
-              <p class="text-[11px] text-slate-400">Minutos mínimos de espera antes de permitir otro registro desde el mismo dispositivo o identificador.</p>
+              <!-- TIEMPO_CONTENCION_MIN -->
+              <div id="wrapperContencion" class="space-y-1.5 pt-2">
+                <label for="TIEMPO_CONTENCION_MIN" class="text-sm font-semibold text-slate-700">Tiempo de contención (minutos)</label>
+                <input 
+                  type="number" 
+                  id="TIEMPO_CONTENCION_MIN" 
+                  min="1"
+                  class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:bg-white transition-all"
+                >
+                <p class="text-[11px] text-slate-400">Minutos mínimos de espera antes de permitir otro registro desde el mismo dispositivo o identificador.</p>
+              </div>
             </div>
           </div>
         </section>
@@ -143,38 +147,40 @@
             <i id="flechaFraude" data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transition-transform duration-200"></i>
           </button>
           <!-- Contenido (Cerrado por defecto) -->
-          <div id="seccionFraude" class="hidden px-5 pb-5 pt-2 border-t border-slate-100 space-y-4">
-            <!-- MEDIDA_HUELLA -->
-            <div class="flex items-start justify-between gap-4 py-2 border-b border-slate-100">
-              <div class="flex-1">
-                <label for="MEDIDA_HUELLA" class="text-sm font-semibold text-slate-700">Alerta de colisión de huellas</label>
-                <p class="text-xs text-slate-500 mt-0.5">Enciende una alarma si se detecta que varios usuarios fichan usando el mismo dispositivo móvil.</p>
+          <div id="seccionFraude" class="transition-all duration-300 ease-in-out max-h-0 opacity-0 overflow-hidden border-t border-slate-100">
+            <div class="px-5 pb-5 pt-4 space-y-4">
+              <!-- MEDIDA_HUELLA -->
+              <div class="flex items-start justify-between gap-4 py-2 border-b border-slate-100">
+                <div class="flex-1">
+                  <label for="MEDIDA_HUELLA" class="text-sm font-semibold text-slate-700">Alerta de colisión de huellas</label>
+                  <p class="text-xs text-slate-500 mt-0.5">Enciende una alarma si se detecta que varios usuarios fichan usando el mismo dispositivo móvil.</p>
+                </div>
+                <input type="checkbox" id="MEDIDA_HUELLA" class="w-5 h-5 accent-slate-600 cursor-pointer rounded mt-1" onchange="toggleHuellaInputs()">
               </div>
-              <input type="checkbox" id="MEDIDA_HUELLA" class="w-5 h-5 accent-slate-600 cursor-pointer rounded mt-1" onchange="toggleHuellaInputs()">
-            </div>
 
-            <!-- UMBRAL_HUELLA_SEG -->
-            <div id="wrapperUmbralHuella" class="space-y-1.5 pt-2">
-              <label for="UMBRAL_HUELLA_SEG" class="text-sm font-semibold text-slate-700">Tolerancia entre registros (segundos)</label>
-              <input 
-                type="number" 
-                id="UMBRAL_HUELLA_SEG" 
-                min="5"
-                class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:bg-white transition-all"
-              >
-              <p class="text-[11px] text-slate-400">Intervalo máximo en segundos entre registros de la misma huella para disparar la alarma.</p>
-            </div>
+              <!-- UMBRAL_HUELLA_SEG -->
+              <div id="wrapperUmbralHuella" class="space-y-1.5 pt-2">
+                <label for="UMBRAL_HUELLA_SEG" class="text-sm font-semibold text-slate-700">Tolerancia entre registros (segundos)</label>
+                <input 
+                  type="number" 
+                  id="UMBRAL_HUELLA_SEG" 
+                  min="5"
+                  class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:bg-white transition-all"
+                >
+                <p class="text-[11px] text-slate-400">Intervalo máximo en segundos entre registros de la misma huella para disparar la alarma.</p>
+              </div>
 
-            <!-- VENTANA_BUSQUEDA_MIN -->
-            <div id="wrapperVentanaBusqueda" class="space-y-1.5 pt-2">
-              <label for="VENTANA_BUSQUEDA_MIN" class="text-sm font-semibold text-slate-700">Ventana de búsqueda histórica (minutos)</label>
-              <input 
-                type="number" 
-                id="VENTANA_BUSQUEDA_MIN" 
-                min="1"
-                class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:bg-white transition-all"
-              >
-              <p class="text-[11px] text-slate-400">Minutos hacia atrás que el servidor escaneará para detectar duplicaciones y contención.</p>
+              <!-- VENTANA_BUSQUEDA_MIN -->
+              <div id="wrapperVentanaBusqueda" class="space-y-1.5 pt-2">
+                <label for="VENTANA_BUSQUEDA_MIN" class="text-sm font-semibold text-slate-700">Ventana de búsqueda histórica (minutos)</label>
+                <input 
+                  type="number" 
+                  id="VENTANA_BUSQUEDA_MIN" 
+                  min="1"
+                  class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:bg-white transition-all"
+                >
+                <p class="text-[11px] text-slate-400">Minutos hacia atrás que el servidor escaneará para detectar duplicaciones y contención.</p>
+              </div>
             </div>
           </div>
         </section>
@@ -193,70 +199,72 @@
             <i id="flechaPersonalizacion" data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transition-transform duration-200"></i>
           </button>
           <!-- Contenido (Cerrado por defecto) -->
-          <div id="seccionPersonalizacion" class="hidden px-5 pb-5 pt-2 border-t border-slate-100 space-y-4">
-            
-            <!-- ETIQUETA_ID (Movido aquí) -->
-            <div class="space-y-1.5 pt-2 border-b border-slate-100 pb-3">
-              <label for="ETIQUETA_ID" class="text-sm font-semibold text-slate-700">Etiqueta de identificación</label>
-              <input 
-                type="text" 
-                id="ETIQUETA_ID" 
-                placeholder="Ej. NIA, DNI, NIE, Correo"
-                class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:bg-white transition-all"
-              >
-              <p class="text-[11px] text-slate-400">Texto descriptivo para solicitar la identificación en el formulario.</p>
-            </div>
-
-            <!-- MSG_BIENVENIDA -->
-            <div class="space-y-1.5 pt-2 border-b border-slate-100 pb-3">
-              <label for="MSG_BIENVENIDA" class="text-sm font-semibold text-slate-700">Mensaje de bienvenida</label>
-              <input 
-                type="text" 
-                id="MSG_BIENVENIDA" 
-                class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:bg-white transition-all"
-              >
-              <p class="text-[11px] text-slate-400">Texto principal que verán los usuarios en la cabecera.</p>
-            </div>
-
-            <!-- COLOR_ACENTO -->
-            <div class="flex items-center gap-4 py-2 border-b border-slate-100 pb-3">
-              <div class="flex-1">
-                <label for="COLOR_ACENTO" class="text-sm font-semibold text-slate-700">Color de acento</label>
-                <p class="text-xs text-slate-500 mt-0.5">Define el color de los botones e indicadores del formulario.</p>
+          <div id="seccionPersonalizacion" class="transition-all duration-300 ease-in-out max-h-0 opacity-0 overflow-hidden border-t border-slate-100">
+            <div class="px-5 pb-5 pt-4 space-y-4">
+              
+              <!-- ETIQUETA_ID (Movido aquí) -->
+              <div class="space-y-1.5 pt-2 border-b border-slate-100 pb-3">
+                <label for="ETIQUETA_ID" class="text-sm font-semibold text-slate-700">Etiqueta de identificación</label>
+                <input 
+                  type="text" 
+                  id="ETIQUETA_ID" 
+                  placeholder="Ej. NIA, DNI, NIE, Correo"
+                  class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:bg-white transition-all"
+                >
+                <p class="text-[11px] text-slate-400">Texto descriptivo para solicitar la identificación en el formulario.</p>
               </div>
-              <input type="color" id="COLOR_ACENTO" class="w-10 h-10 border-0 rounded cursor-pointer">
-            </div>
 
-            <!-- LOGO_URL -->
-            <div class="space-y-1.5 pt-2 border-b border-slate-100 pb-3">
-              <label for="LOGO_URL" class="text-sm font-semibold text-slate-700">URL del logotipo de cabecera</label>
-              <input 
-                type="text" 
-                id="LOGO_URL" 
-                placeholder="Dejar vacío para usar el icono predeterminado"
-                class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:bg-white transition-all"
-              >
-              <p class="text-[11px] text-slate-400">Dirección web de la imagen del logo (ej. el escudo de tu universidad).</p>
-            </div>
-
-            <!-- MSG_CONFIRMACION -->
-            <div class="space-y-1.5 pt-2 border-b border-slate-100 pb-3">
-              <label for="MSG_CONFIRMACION" class="text-sm font-semibold text-slate-700">Mensaje de confirmación</label>
-              <input 
-                type="text" 
-                id="MSG_CONFIRMACION" 
-                class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:bg-white transition-all"
-              >
-              <p class="text-[11px] text-slate-400">Texto de éxito mostrado una vez completado el registro correctamente.</p>
-            </div>
-
-            <!-- MOSTRAR_DIAGNOSTICO -->
-            <div class="flex items-start justify-between gap-4 py-2">
-              <div class="flex-1">
-                <label for="MOSTRAR_DIAGNOSTICO" class="text-sm font-semibold text-slate-700">Mostrar panel de diagnóstico</label>
-                <p class="text-xs text-slate-500 mt-0.5">Muestra el estado de la ubicación GPS y de la Huella Segura en el frontend.</p>
+              <!-- MSG_BIENVENIDA -->
+              <div class="space-y-1.5 pt-2 border-b border-slate-100 pb-3">
+                <label for="MSG_BIENVENIDA" class="text-sm font-semibold text-slate-700">Mensaje de bienvenida</label>
+                <input 
+                  type="text" 
+                  id="MSG_BIENVENIDA" 
+                  class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:bg-white transition-all"
+                >
+                <p class="text-[11px] text-slate-400">Texto principal que verán los usuarios en la cabecera.</p>
               </div>
-              <input type="checkbox" id="MOSTRAR_DIAGNOSTICO" class="w-5 h-5 accent-slate-600 cursor-pointer rounded mt-1">
+
+              <!-- COLOR_ACENTO -->
+              <div class="flex items-center gap-4 py-2 border-b border-slate-100 pb-3">
+                <div class="flex-1">
+                  <label for="COLOR_ACENTO" class="text-sm font-semibold text-slate-700">Color de acento</label>
+                  <p class="text-xs text-slate-500 mt-0.5">Define el color de los botones e indicadores del formulario.</p>
+                </div>
+                <input type="color" id="COLOR_ACENTO" class="w-10 h-10 border-0 rounded cursor-pointer">
+              </div>
+
+              <!-- LOGO_URL -->
+              <div class="space-y-1.5 pt-2 border-b border-slate-100 pb-3">
+                <label for="LOGO_URL" class="text-sm font-semibold text-slate-700">URL del logotipo de cabecera</label>
+                <input 
+                  type="text" 
+                  id="LOGO_URL" 
+                  placeholder="Dejar vacío para usar el icono predeterminado"
+                  class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:bg-white transition-all"
+                >
+                <p class="text-[11px] text-slate-400">Dirección web de la imagen del logo (ej. el escudo de tu universidad).</p>
+              </div>
+
+              <!-- MSG_CONFIRMACION -->
+              <div class="space-y-1.5 pt-2 border-b border-slate-100 pb-3">
+                <label for="MSG_CONFIRMACION" class="text-sm font-semibold text-slate-700">Mensaje de confirmación</label>
+                <input 
+                  type="text" 
+                  id="MSG_CONFIRMACION" 
+                  class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:bg-white transition-all"
+                >
+                <p class="text-[11px] text-slate-400">Texto de éxito mostrado una vez completado el registro correctamente.</p>
+              </div>
+
+              <!-- MOSTRAR_DIAGNOSTICO -->
+              <div class="flex items-start justify-between gap-4 py-2">
+                <div class="flex-1">
+                  <label for="MOSTRAR_DIAGNOSTICO" class="text-sm font-semibold text-slate-700">Mostrar panel de diagnóstico</label>
+                  <p class="text-xs text-slate-500 mt-0.5">Muestra el estado de la ubicación GPS y de la Huella Segura en el frontend.</p>
+                </div>
+                <input type="checkbox" id="MOSTRAR_DIAGNOSTICO" class="w-5 h-5 accent-slate-600 cursor-pointer rounded mt-1">
+              </div>
             </div>
           </div>
         </section>
@@ -333,7 +341,7 @@
     };
 
     /**
-     * Alterna la visibilidad de los bloques estilo acordeón
+     * Alterna la visibilidad de los bloques estilo acordeón con animación suave
      */
     function toggleAcordeon(seccionId, flechaId) {
       const secciones = ['seccionGeolocalizacion', 'seccionContencion', 'seccionFraude', 'seccionPersonalizacion'];
@@ -345,16 +353,22 @@
         if (!secEl || !flEl) return;
 
         if (s === seccionId) {
-          const estaOculto = secEl.classList.contains('hidden');
-          if (estaOculto) {
-            secEl.classList.remove('hidden');
-            flEl.setAttribute('data-lucide', 'chevron-up');
-          } else {
-            secEl.classList.add('hidden');
+          const estaAbierto = secEl.classList.contains('max-h-[600px]');
+          if (estaAbierto) {
+            // Cerrar suavemente
+            secEl.classList.remove('max-h-[600px]', 'opacity-100');
+            secEl.classList.add('max-h-0', 'opacity-0');
             flEl.setAttribute('data-lucide', 'chevron-down');
+          } else {
+            // Abrir suavemente
+            secEl.classList.remove('max-h-0', 'opacity-0');
+            secEl.classList.add('max-h-[600px]', 'opacity-100');
+            flEl.setAttribute('data-lucide', 'chevron-up');
           }
         } else {
-          secEl.classList.add('hidden');
+          // Cerrar los demás suavemente
+          secEl.classList.remove('max-h-[600px]', 'opacity-100');
+          secEl.classList.add('max-h-0', 'opacity-0');
           flEl.setAttribute('data-lucide', 'chevron-down');
         }
       });
