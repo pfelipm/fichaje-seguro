@@ -824,13 +824,9 @@ function guardarUrlManual(url) {
  * Abre el diálogo con el código QR para fichaje.
  */
 function abrirQrUI() {
-  const html = HtmlService.createTemplateFromFile('QrUI');
-  const urlBase = obtenerUrlAsistencia();
-  html.webAppUrl = urlBase;
-  
-  const output = html.evaluate()
+  const html = HtmlService.createHtmlOutputFromFile('QrUI')
       .setWidth(550)
       .setHeight(580)
       .setTitle('Código QR de Fichaje');
-  SpreadsheetApp.getUi().showModalDialog(output, 'Código QR de Fichaje');
+  SpreadsheetApp.getUi().showModalDialog(html, 'Código QR de Fichaje');
 }

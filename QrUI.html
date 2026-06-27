@@ -25,6 +25,12 @@
   <!-- Contenido principal -->
   <main class="flex-1 overflow-y-auto p-6 flex flex-col items-center justify-center relative">
 
+    <!-- Vista 0: Cargando (Visible al iniciar) -->
+    <div id="vistaLoading" class="w-full flex flex-col items-center justify-center gap-3 py-10">
+      <div class="animate-spin rounded-full h-10 w-10 border-4 border-slate-600 border-t-transparent"></div>
+      <p class="text-xs text-slate-500 font-medium">Obteniendo enlace de fichaje...</p>
+    </div>
+
     <!-- Vista 1: QR Generado con éxito (Oculta por defecto hasta validar) -->
     <div id="vistaQr" class="w-full hidden flex flex-col items-center gap-5">
       <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center gap-4">
@@ -155,13 +161,32 @@
   </footer>
 
   <script>
-    // URL inyectada desde el backend de forma segura en un literal de cadena de JavaScript
-    let WEBAPP_URL = "<?!= webAppUrl ?>";
+    // Variable global de URL (obtenida asíncronamente)
+    let WEBAPP_URL = "";
 
     window.onload = function() {
       lucide.createIcons();
-      inicializarVista();
+      cargarUrlServidor();
     };
+
+    /**
+     * Llama al servidor para leer la URL registrada
+     */
+    function cargarUrlServidor() {
+      google.script.run
+        .withSuccessHandler(function(url) {
+          WEBAPP_URL = url;
+          document.getElementById('vistaLoading').classList.add('hidden');
+          inicializarVista();
+        })
+        .withFailureHandler(function(err) {
+          console.error("Error al obtener la URL del servidor:", err);
+          WEBAPP_URL = "";
+          document.getElementById('vistaLoading').classList.add('hidden');
+          inicializarVista();
+        })
+        .obtenerUrlAsistencia();
+    }
 
     /**
      * Comprueba si existe URL para renderizar el QR o si debe mostrar el formulario de configuración.
